@@ -1,6 +1,6 @@
 import json
 
-TITLE = "TWitter Time 2025"
+TITLE = "Twitter Time 2025"
 
 # Resimdeki yapıya birebir uygun Grid Haritası
 # Boşluklar # ile gösterilir.
