@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ puzzle.title }}</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 { margin-bottom: 30px; color: #333; }
+
+        .game-container {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .grid-board {
+            display: grid;
+            gap: 1px;
+            background-color: #333;
+            border: 5px solid #333;
+            /* Izgara boş olsa bile görünsün diye geçici boyut verelim */
+            min-width: 100px; 
+            min-height: 100px;
+        }
+
+        .cell {
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cell.black { background-color: #333; }
+
+        .cell input {
+            width: 100%; height: 100%;
+            border: none; text-align: center;
+            font-size: 24px; font-weight: bold;
+            text-transform: uppercase; outline: none;
+        }
+        
+        /* Doğru/Yanlış renkleri */
+        .correct { background-color: #d4edda !important; }
+        .wrong { background-color: #f8d7da !important; }
+
+        .clues-panel {
+            width: 300px; background: white;
+            padding: 20px; border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>{{ puzzle.title }}</h1>
+
+    <div class="game-container">
+        <div id="grid" class="grid-board"></div>
+
+        <div class="clues-panel">
+            <h3>Soldan Sağa</h3>
+            <ul>
+                {% for key, value in puzzle.clues.across.items %}
+                    <li><strong>{{ key }}</strong> {{ value }}</li>
+                {% endfor %}
+            </ul>
+            <h3>Yukarıdan Aşağıya</h3>
+            <ul>
+                {% for key, value in puzzle.clues.down.items %}
+                    <li><strong>{{ key }}</strong> {{ value }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Hata ayıklama için konsola yazdırıyoruz
+        console.log("Sayfa yüklendi, JS çalışıyor...");
+
+        // Editör burada kırmızı çizebilir, sorun yok.
+        const puzzleData = {{ puzzle_json|safe }};
+
+        console.log("Gelen Veri:", puzzleData);
+
+        const gridElement = document.getElementById('grid');
+
+        if (!puzzleData || !puzzleData.grid) {
+            console.error("HATA: Veri bulunamadı!");
+            gridElement.innerHTML = "<p style='color:white; padding:10px'>Veri Hatası!</p>";
+        } else {
+            // Kolon ayarını yap
+            gridElement.style.gridTemplateColumns = `repeat(${puzzleData.width}, 50px)`;
+
+            // Döngü
+            puzzleData.grid.forEach((row, rowIndex) => {
+                row.forEach((cellValue, colIndex) => {
+                    const cellDiv = document.createElement('div');
+                    cellDiv.classList.add('cell');
+
+                    if (cellValue === '#') {
+                        cellDiv.classList.add('black');
+                    } else {
+                        const input = document.createElement('input');
+                        input.maxLength = 1;
+                        input.dataset.row = rowIndex;
+                        input.dataset.col = colIndex;
+                        input.dataset.answer = cellValue;
+
+                        // Harf girince kontrol et
+                        input.addEventListener('input', (e) => {
+                            const val = e.target.value.toUpperCase();
+                            const correct = e.target.dataset.answer;
+                            
+                            if (val === correct) {
+                                e.target.classList.add('correct');
+                                e.target.classList.remove('wrong');
+                            } else if (val !== "") {
+                                e.target.classList.add('wrong');
+                                e.target.classList.remove('correct');
+                            } else {
+                                e.target.classList.remove('wrong', 'correct');
+                            }
+                        });
+
+                        cellDiv.appendChild(input);
+                    }
+                    gridElement.appendChild(cellDiv);
+                });
+            });
+            console.log("Izgara başarıyla oluşturuldu.");
+        }
+    </script>
+</body>
+</html>
