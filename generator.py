@@ -7,36 +7,40 @@ TITLE = "TWİTTER TİME 2025"
 # Harflerin yerleşimi senin attığın görsele göre hesaplandı.
 
 RAW_GRID = """
-###ÖZGE#######
-#H###Ü##K#####
-#A#KIZILAY####
-#K#A#E##M#####
-#M#D#L##E#####
-YAPI#G##R#####
+###ÖZGE#####Ö#
+#H###Ü##K###T#
+#A#KIZILAY##E#
+#K#A#E##M###N#
+#M#D#L##E###A#
+YAPI#G##R###Z#
 #R#K#Ö#SANDVİÇ
-###Ö#T#E######
-###Y#L#L######
-#####Ü#İ######
-#####MANIFEST#
-#######S######
-###MAHMUT#####
+###Ö#T#E##E###
+#GOY#L#L#EVRİM
+#Ü###Ü#İ##L###
+#L###MANİFEST#
+#L#####S##T###
+#Ü#MAHMUT#####
 """.strip().split('\n')
 
 CLUES = {
     "across": {
         "1": "Eren’in eski nişanlısı",
-        "5": "Tabela",
-        "6": "Fenerbahçenin şampiyon olamama sebebi",
-        "7": "Polis yemeği",
-        "8": "Yılın Grubu",
-        "9": "... Tanal"
+        "6": "Tabela",
+        "7": "Fenerbahçenin şampiyon olamama sebebi",
+        "8": "Polis yemeği",
+        "10": "Yahudi yalakası",
+        "11": "Yılın Grubu",
+        "12": "... Tanal"
     },
     "down": {
         "2": "Bir iltifat (Saadettin Saran)",
-        "3": "Bimden çıktıktan sonra girmek için izin almamız gerek yer",
-        "4": "...mi cok seviyorum",
-        "5": "... Boğası",
-        "7": "2 Fenocun uğruna kavga ettiği kız"
+        "3": "... hakkımı istiyorum",
+        "4": "Bimden çıktıktan sonra girmek için izin almamız gerek yer",
+        "5": "...mı çok seviyorum",
+        "6": "... Boğası",
+        "8": "2 Fenocun uğruna kavga ettiği kız",
+        "9": "Öcalan'ın meclise gelmesini isteyen siyasetçi",
+        "10": "Bu sene kaybettiğimiz sanatçı",
     }
 }
 

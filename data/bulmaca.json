@@ -16,7 +16,7 @@
       "#",
       "#",
       "#",
-      "#",
+      "Ö",
       "#"
     ],
     [
@@ -32,7 +32,7 @@
       "#",
       "#",
       "#",
-      "#",
+      "T",
       "#"
     ],
     [
@@ -48,7 +48,7 @@
       "Y",
       "#",
       "#",
-      "#",
+      "E",
       "#"
     ],
     [
@@ -64,7 +64,7 @@
       "#",
       "#",
       "#",
-      "#",
+      "N",
       "#"
     ],
     [
@@ -80,7 +80,7 @@
       "#",
       "#",
       "#",
-      "#",
+      "A",
       "#"
     ],
     [
@@ -96,7 +96,7 @@
       "#",
       "#",
       "#",
-      "#",
+      "Z",
       "#"
     ],
     [
@@ -126,30 +126,30 @@
       "E",
       "#",
       "#",
-      "#",
+      "E",
       "#",
       "#",
       "#"
     ],
     [
       "#",
-      "#",
-      "#",
+      "G",
+      "O",
       "Y",
       "#",
       "L",
       "#",
       "L",
       "#",
-      "#",
-      "#",
-      "#",
-      "#",
-      "#"
+      "E",
+      "V",
+      "R",
+      "İ",
+      "M"
     ],
     [
       "#",
-      "#",
+      "Ü",
       "#",
       "#",
       "#",
@@ -158,21 +158,21 @@
       "İ",
       "#",
       "#",
-      "#",
+      "L",
       "#",
       "#",
       "#"
     ],
     [
       "#",
-      "#",
+      "L",
       "#",
       "#",
       "#",
       "M",
       "A",
       "N",
-      "I",
+      "İ",
       "F",
       "E",
       "S",
@@ -181,7 +181,7 @@
     ],
     [
       "#",
-      "#",
+      "L",
       "#",
       "#",
       "#",
@@ -190,14 +190,14 @@
       "S",
       "#",
       "#",
-      "#",
+      "T",
       "#",
       "#",
       "#"
     ],
     [
       "#",
-      "#",
+      "Ü",
       "#",
       "M",
       "A",
@@ -215,18 +215,22 @@
   "clues": {
     "across": {
       "1": "Eren’in eski nişanlısı",
-      "5": "Tabela",
-      "6": "Fenerbahçenin şampiyon olamama sebebi",
-      "7": "Polis yemeği",
-      "8": "Yılın Grubu",
-      "9": "... Tanal"
+      "6": "Tabela",
+      "7": "Fenerbahçenin şampiyon olamama sebebi",
+      "8": "Polis yemeği",
+      "10": "Yahudi yalakası",
+      "11": "Yılın Grubu",
+      "12": "... Tanal"
     },
     "down": {
       "2": "Bir iltifat (Saadettin Saran)",
-      "3": "Bimden çıktıktan sonra girmek için izin almamız gerek yer",
-      "4": "...mi cok seviyorum",
-      "5": "... Boğası",
-      "7": "2 Fenocun uğruna kavga ettiği kız"
+      "3": "... hakkımı istiyorum",
+      "4": "Bimden çıktıktan sonra girmek için izin almamız gerek yer",
+      "5": "...mı çok seviyorum",
+      "6": "... Boğası",
+      "8": "2 Fenocun uğruna kavga ettiği kız",
+      "9": "Öcalan'ın meclise gelmesini isteyen siyasetçi",
+      "10": "Bu sene kaybettiğimiz sanatçı"
     }
   }
 }
