@@ -1,4 +1,3 @@
-# game/views.py - SON VE DOĞRU HALİ
 import json
 import os
 from django.shortcuts import render
@@ -9,10 +8,15 @@ def index(request):
     json_path = os.path.join(settings.BASE_DIR, 'data', 'bulmaca.json')
     
     # Dosyayı aç ve oku
-    with open(json_path, 'r', encoding='utf-8') as f:
-        puzzle_data = json.load(f)
+    try:
+        with open(json_path, 'r', encoding='utf-8') as f:
+            puzzle_data = json.load(f)
+    except Exception as e:
+        # Dosya okunamazsa hata vermesin, boş veri göndersin (Debug için)
+        print(f"HATA: JSON okunamadı! {e}")
+        puzzle_data = {}
 
+    # HTML'e gönder
     return render(request, 'game/index.html', {
-        'puzzle': puzzle_data,
-        'puzzle_json': json.dumps(puzzle_data)
+        'puzzle': puzzle_data
     })

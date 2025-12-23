@@ -2,65 +2,145 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>{{ puzzle.title }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
     <style>
+        :root {
+            --bg-color: #f3f4f6;
+            --primary-color: #2563eb;
+            --text-color: #111827;
+            --cell-bg: #ffffff;
+            --cell-size: 50px;
+        }
+
         body {
-            font-family: sans-serif;
-            background-color: #f4f4f9;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
-            padding: 20px;
         }
 
-        h1 { margin-bottom: 30px; color: #333; }
+        h1 {
+            color: var(--text-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
 
         .game-container {
             display: flex;
-            gap: 40px;
+            gap: 30px;
             justify-content: center;
             align-items: flex-start;
+            flex-wrap: wrap;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        /* --- BULMACA KARTI --- */
+        .puzzle-card {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            overflow: auto;
+            display: flex;
+            justify-content: center;
         }
 
         .grid-board {
             display: grid;
-            gap: 1px;
-            background-color: #333;
-            border: 5px solid #333;
-            /* Izgara boş olsa bile görünsün diye geçici boyut verelim */
-            min-width: 100px; 
-            min-height: 100px;
+            gap: 2px;
+            background-color: #94a3b8;
+            border: 2px solid #94a3b8;
+            border-radius: 4px;
         }
 
         .cell {
-            width: 50px;
-            height: 50px;
-            background-color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            width: var(--cell-size);
+            height: var(--cell-size);
+            background-color: var(--cell-bg);
+            position: relative;
         }
 
-        .cell.black { background-color: #333; }
+        /* SİYAH KARE */
+        .cell.black {
+            background-color: #1e293b;
+        }
 
+        /* INPUT (YAZI GİRİŞİ) */
         .cell input {
-            width: 100%; height: 100%;
-            border: none; text-align: center;
-            font-size: 24px; font-weight: bold;
-            text-transform: uppercase; outline: none;
+            width: 100%;
+            height: 100%;
+            border: none;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 800;
+            text-transform: uppercase;
+            outline: none;
+            background: transparent;
+            color: #000000; /* Yazı rengi SİYAH (Garanti olsun) */
+            padding: 0;
+            margin: 0;
+            border-radius: 0;
+            z-index: 10; /* Diğer her şeyin üstünde olsun */
+            cursor: text;
         }
-        
-        /* Doğru/Yanlış renkleri */
-        .correct { background-color: #d4edda !important; }
-        .wrong { background-color: #f8d7da !important; }
 
-        .clues-panel {
-            width: 300px; background: white;
-            padding: 20px; border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        /* Odaklanınca */
+        .cell input:focus {
+            background-color: #dbeafe;
+        }
+
+        /* Doğru / Yanlış Renkleri */
+        .cell input.correct { background-color: #dcfce7 !important; color: #166534 !important; }
+        .cell input.wrong { background-color: #fee2e2 !important; color: #991b1b !important; }
+
+        /* --- İPUÇLARI --- */
+        .clues-wrapper {
+            flex: 1;
+            min-width: 300px;
+            max-width: 450px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .clue-box {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .clue-box h3 {
+            margin-top: 0;
+            font-size: 16px;
+            color: var(--primary-color);
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 8px;
+        }
+
+        .clue-box ul { padding: 0; list-style: none; }
+        .clue-box li {
+            padding: 6px 0;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 14px;
+            line-height: 1.4;
+            color: #4b5563;
+        }
+        .clue-box strong { color: #111827; margin-right: 5px; }
+
+        /* MOBİL AYARLAR */
+        @media (max-width: 768px) {
+            :root { --cell-size: 40px; }
+            .game-container { flex-direction: column; align-items: center; }
+            .clues-wrapper { width: 100%; }
         }
     </style>
 </head>
@@ -68,44 +148,44 @@
 
     <h1>{{ puzzle.title }}</h1>
 
-    <div class="game-container">
-        <div id="grid" class="grid-board"></div>
+    {{ puzzle|json_script:"bulmaca-data" }}
 
-        <div class="clues-panel">
-            <h3>Soldan Sağa</h3>
-            <ul>
-                {% for key, value in puzzle.clues.across.items %}
-                    <li><strong>{{ key }}</strong> {{ value }}</li>
-                {% endfor %}
-            </ul>
-            <h3>Yukarıdan Aşağıya</h3>
-            <ul>
-                {% for key, value in puzzle.clues.down.items %}
-                    <li><strong>{{ key }}</strong> {{ value }}</li>
-                {% endfor %}
-            </ul>
+    <div class="game-container">
+        <div class="puzzle-card">
+            <div id="grid" class="grid-board"></div>
+        </div>
+
+        <div class="clues-wrapper">
+            <div class="clue-box">
+                <h3>Soldan Sağa</h3>
+                <ul>
+                    {% for key, value in puzzle.clues.across.items %}
+                        <li><strong>{{ key }}</strong> {{ value }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="clue-box">
+                <h3>Yukarıdan Aşağıya</h3>
+                <ul>
+                    {% for key, value in puzzle.clues.down.items %}
+                        <li><strong>{{ key }}</strong> {{ value }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
     </div>
 
     <script>
-        // Hata ayıklama için konsola yazdırıyoruz
-        console.log("Sayfa yüklendi, JS çalışıyor...");
-
-        // Editör burada kırmızı çizebilir, sorun yok.
-        const puzzleData = {{ puzzle_json|safe }};
-
-        console.log("Gelen Veri:", puzzleData);
-
+        const dataScript = document.getElementById('bulmaca-data');
+        const puzzleData = JSON.parse(dataScript.textContent);
         const gridElement = document.getElementById('grid');
 
         if (!puzzleData || !puzzleData.grid) {
-            console.error("HATA: Veri bulunamadı!");
-            gridElement.innerHTML = "<p style='color:white; padding:10px'>Veri Hatası!</p>";
+            gridElement.innerHTML = "Veri Hatası";
         } else {
-            // Kolon ayarını yap
-            gridElement.style.gridTemplateColumns = `repeat(${puzzleData.width}, 50px)`;
+            // Grid kolon ayarı
+            gridElement.style.gridTemplateColumns = `repeat(${puzzleData.width}, var(--cell-size))`;
 
-            // Döngü
             puzzleData.grid.forEach((row, rowIndex) => {
                 row.forEach((cellValue, colIndex) => {
                     const cellDiv = document.createElement('div');
@@ -119,29 +199,64 @@
                         input.dataset.row = rowIndex;
                         input.dataset.col = colIndex;
                         input.dataset.answer = cellValue;
+                        
+                        // Mobilde klavye ayarları
+                        input.setAttribute('inputmode', 'text');
+                        input.setAttribute('autocomplete', 'off');
 
-                        // Harf girince kontrol et
+                        // --- SORUN ÇÖZEN KISIM ---
                         input.addEventListener('input', (e) => {
+                            // 1. Harfi al ve büyüt
                             const val = e.target.value.toUpperCase();
-                            const correct = e.target.dataset.answer;
                             
-                            if (val === correct) {
+                            // 2. Kutuya ZORLA yaz (Görünmeme sorununu çözer)
+                            e.target.value = val;
+
+                            // 3. Renk Kontrolü
+                            const ans = e.target.dataset.answer;
+                            if (val === ans) {
                                 e.target.classList.add('correct');
                                 e.target.classList.remove('wrong');
                             } else if (val !== "") {
                                 e.target.classList.add('wrong');
                                 e.target.classList.remove('correct');
                             } else {
-                                e.target.classList.remove('wrong', 'correct');
+                                e.target.classList.remove('correct', 'wrong');
                             }
                         });
+
+                        // Tıklayınca seç
+                        input.addEventListener('focus', function() { this.select(); });
 
                         cellDiv.appendChild(input);
                     }
                     gridElement.appendChild(cellDiv);
                 });
             });
-            console.log("Izgara başarıyla oluşturuldu.");
+
+            // YÖN TUŞLARI
+            document.addEventListener('keydown', (e) => {
+                if (document.activeElement.tagName !== "INPUT") return;
+
+                const current = document.activeElement;
+                let r = parseInt(current.dataset.row);
+                let c = parseInt(current.dataset.col);
+
+                if (e.key === "ArrowRight") c++;
+                if (e.key === "ArrowLeft") c--;
+                if (e.key === "ArrowDown") r++;
+                if (e.key === "ArrowUp") r--;
+
+                const target = document.querySelector(`input[data-row='${r}'][data-col='${c}']`);
+                if (target) {
+                    target.focus();
+                    // Buraya preventDefault koymuyoruz ki harf tuşları çalışsın
+                    // Sadece ok tuşlarında sayfa kaymasını engellemek istersek:
+                    if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)) {
+                        e.preventDefault();
+                    }
+                }
+            });
         }
     </script>
 </body>

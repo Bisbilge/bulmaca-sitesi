@@ -1,5 +1,5 @@
 {
-  "title": "Twitter Haftalık Bulmaca #1",
+  "title": "Haftalık Bulmaca #1",
   "width": 5,
   "height": 5,
   "grid": [
@@ -10,7 +10,7 @@
     ["M", "#", "R", "A", "F"]
   ],
   "clues": {
-    "across": { "1": "installation wizard" },
-    "down": { "1": "installation wizard" }
+    "across": { "1": "Evcil bir hayvan", "3": "Aydınlatma aracı" },
+    "down": { "1": "Yazı yazma aracı", "2": "Bir meyve" }
   }
 }
