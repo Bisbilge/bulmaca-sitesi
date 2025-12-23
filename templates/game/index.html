@@ -65,12 +65,25 @@
             width: var(--cell-size);
             height: var(--cell-size);
             background-color: var(--cell-bg);
-            position: relative;
+            position: relative; /* Numara buna göre konumlanır */
         }
 
         /* SİYAH KARE */
         .cell.black {
             background-color: #1e293b;
+        }
+
+        /* YENİ EKLENEN: KARE NUMARASI */
+        .cell-number {
+            position: absolute;
+            top: 2px;
+            left: 3px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748b; /* Gri tonu */
+            z-index: 5; /* Yazının altında kalsın */
+            pointer-events: none; /* Tıklamayı engellemesin */
+            line-height: 1;
         }
 
         /* INPUT (YAZI GİRİŞİ) */
@@ -84,20 +97,20 @@
             text-transform: uppercase;
             outline: none;
             background: transparent;
-            color: #000000; /* Yazı rengi SİYAH (Garanti olsun) */
+            color: #000000;
             padding: 0;
             margin: 0;
             border-radius: 0;
-            z-index: 10; /* Diğer her şeyin üstünde olsun */
+            z-index: 10; /* Numaranın üstünde olsun */
             cursor: text;
+            /* Numarayı kapatmasın diye hafif dolgu */
+            padding-top: 8px; 
         }
 
-        /* Odaklanınca */
         .cell input:focus {
             background-color: #dbeafe;
         }
 
-        /* Doğru / Yanlış Renkleri */
         .cell input.correct { background-color: #dcfce7 !important; color: #166534 !important; }
         .cell input.wrong { background-color: #fee2e2 !important; color: #991b1b !important; }
 
@@ -136,7 +149,6 @@
         }
         .clue-box strong { color: #111827; margin-right: 5px; }
 
-        /* MOBİL AYARLAR */
         @media (max-width: 768px) {
             :root { --cell-size: 40px; }
             .game-container { flex-direction: column; align-items: center; }
@@ -160,7 +172,7 @@
                 <h3>Soldan Sağa</h3>
                 <ul>
                     {% for key, value in puzzle.clues.across.items %}
-                        <li><strong>{{ key }}</strong> {{ value }}</li>
+                        <li><strong>{{ key }}:</strong> {{ value }}</li>
                     {% endfor %}
                 </ul>
             </div>
@@ -168,7 +180,7 @@
                 <h3>Yukarıdan Aşağıya</h3>
                 <ul>
                     {% for key, value in puzzle.clues.down.items %}
-                        <li><strong>{{ key }}</strong> {{ value }}</li>
+                        <li><strong>{{ key }}:</strong> {{ value }}</li>
                     {% endfor %}
                 </ul>
             </div>
@@ -186,6 +198,9 @@
             // Grid kolon ayarı
             gridElement.style.gridTemplateColumns = `repeat(${puzzleData.width}, var(--cell-size))`;
 
+            // Numara sayacı
+            let clueCounter = 1;
+
             puzzleData.grid.forEach((row, rowIndex) => {
                 row.forEach((cellValue, colIndex) => {
                     const cellDiv = document.createElement('div');
@@ -194,25 +209,41 @@
                     if (cellValue === '#') {
                         cellDiv.classList.add('black');
                     } else {
+                        // --- NUMARALANDIRMA MANTIĞI ---
+                        // Soldan Sağa Başlangıç mı? (Solu sınır veya duvarsa VE sağı harfse)
+                        const isAcrossStart = (colIndex === 0 || row[colIndex - 1] === '#') && 
+                                              (colIndex + 1 < puzzleData.width && row[colIndex + 1] !== '#');
+                        
+                        // Yukarıdan Aşağıya Başlangıç mı? (Üstü sınır veya duvarsa VE altı harfse)
+                        // Önce güvenli şekilde üst ve alt satırları kontrol et
+                        const prevRow = puzzleData.grid[rowIndex - 1];
+                        const nextRow = puzzleData.grid[rowIndex + 1];
+                        
+                        const isDownStart = (rowIndex === 0 || (prevRow && prevRow[colIndex] === '#')) && 
+                                            (nextRow && nextRow[colIndex] !== '#');
+
+                        // Eğer başlangıçsa numara bas
+                        if (isAcrossStart || isDownStart) {
+                            const numSpan = document.createElement('span');
+                            numSpan.className = 'cell-number';
+                            numSpan.innerText = clueCounter;
+                            cellDiv.appendChild(numSpan);
+                            clueCounter++;
+                        }
+                        // --------------------------------
+
                         const input = document.createElement('input');
                         input.maxLength = 1;
                         input.dataset.row = rowIndex;
                         input.dataset.col = colIndex;
                         input.dataset.answer = cellValue;
                         
-                        // Mobilde klavye ayarları
                         input.setAttribute('inputmode', 'text');
                         input.setAttribute('autocomplete', 'off');
 
-                        // --- SORUN ÇÖZEN KISIM ---
                         input.addEventListener('input', (e) => {
-                            // 1. Harfi al ve büyüt
                             const val = e.target.value.toUpperCase();
-                            
-                            // 2. Kutuya ZORLA yaz (Görünmeme sorununu çözer)
                             e.target.value = val;
-
-                            // 3. Renk Kontrolü
                             const ans = e.target.dataset.answer;
                             if (val === ans) {
                                 e.target.classList.add('correct');
@@ -225,9 +256,7 @@
                             }
                         });
 
-                        // Tıklayınca seç
                         input.addEventListener('focus', function() { this.select(); });
-
                         cellDiv.appendChild(input);
                     }
                     gridElement.appendChild(cellDiv);
@@ -237,7 +266,6 @@
             // YÖN TUŞLARI
             document.addEventListener('keydown', (e) => {
                 if (document.activeElement.tagName !== "INPUT") return;
-
                 const current = document.activeElement;
                 let r = parseInt(current.dataset.row);
                 let c = parseInt(current.dataset.col);
@@ -250,8 +278,6 @@
                 const target = document.querySelector(`input[data-row='${r}'][data-col='${c}']`);
                 if (target) {
                     target.focus();
-                    // Buraya preventDefault koymuyoruz ki harf tuşları çalışsın
-                    // Sadece ok tuşlarında sayfa kaymasını engellemek istersek:
                     if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)) {
                         e.preventDefault();
                     }
