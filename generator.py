@@ -19,16 +19,17 @@ YAPI#G##R#####
 #####Ü#İ######
 #####MANIFEST#
 #######S######
-#######U######
+###MAHMUT#####
 """.strip().split('\n')
 
 CLUES = {
     "across": {
         "1": "Eren’in eski nişanlısı",
-        "5": "Ankaradaki herkesin fotoğraf çekildiği tabela nerede",
+        "5": "Tabela",
         "6": "Fenerbahçenin şampiyon olamama sebebi",
         "7": "Polis yemeği",
-        "8": "Yılın Grubu"
+        "8": "Yılın Grubu",
+        "9": "... Tanal"
     },
     "down": {
         "2": "Bir iltifat (Saadettin Saran)",
