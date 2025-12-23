@@ -1,6 +1,6 @@
 import json
 
-TITLE = "Haftalık Bulmaca #2: Fenomenler & İlişkiler"
+TITLE = "TWitter Time 2025"
 
 # Resimdeki yapıya birebir uygun Grid Haritası
 # Boşluklar # ile gösterilir.
@@ -16,7 +16,7 @@ YAPI#G##R#####
 #R#K#Ö#SANDVİÇ
 ###Ö#T#E######
 ###Y#L#L######
-#####Ü#I######
+#####Ü#İ######
 #####MANIFEST#
 #######S######
 #######U######
