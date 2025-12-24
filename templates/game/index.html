@@ -12,57 +12,56 @@
             --primary-color: #2563eb;
             --text-color: #111827;
             --cell-bg: #ffffff;
-            
-            /* Varsayılan boyut (JS bunu ezecek) */
-            --cell-size: 40px; 
-            /* Font boyutu kutunun %60'ı olsun */
-            --font-scale: 0.6;
+            /* Mobilde varsayılan boyut biraz daha küçük olsun */
+            --cell-size: 44px; 
         }
 
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-color);
             margin: 0;
-            padding: 10px;
+            padding: 15px 10px; /* Kenar boşlukları mobilde azaldı */
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            /* Mobilde aşağı çekince yenilemeyi engelle (App hissi verir) */
             overscroll-behavior-y: none;
         }
 
         h1 {
             color: var(--text-color);
-            margin-bottom: 10px;
-            font-size: 1.3rem;
+            margin-bottom: 15px;
+            font-size: 1.5rem; /* Mobilde başlık çok yer kaplamasın */
             text-align: center;
         }
 
         .game-container {
             display: flex;
-            flex-direction: column; /* Mobilde direkt alt alta */
-            align-items: center;
-            gap: 15px;
+            gap: 20px;
+            justify-content: center;
+            align-items: flex-start;
+            flex-wrap: wrap;
             width: 100%;
-            max-width: 600px; /* Tablette çok yayılmasın */
+            max-width: 1200px;
         }
 
         /* --- BULMACA KARTI --- */
         .puzzle-card {
             background: white;
-            padding: 8px;
+            padding: 10px; /* Mobilde padding azaldı */
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             
-            /* Genişlik %100 olsun ki JS ekranı tam ölçebilsin */
-            width: 100%; 
-            box-sizing: border-box;
+            /* MOBİL İÇİN KRİTİK: */
+            /* Kartın genişliği ekranı aşarsa içerik taşmasın, kaydırılsın */
+            max-width: 100%;
+            overflow: auto; 
+            -webkit-overflow-scrolling: touch; /* iOS'ta akıcı kaydırma */
             
             display: flex;
-            justify-content: center;
-            
-            /* Yine de taşma koruması bırakalım (Çok büyük puzzlelar için) */
-            overflow-x: auto;
+            justify-content: center; /* Küçük bulmacaları ortalar */
+            align-items: flex-start; /* Büyük bulmacalarda üstte kalsın */
         }
 
         .grid-board {
@@ -71,6 +70,8 @@
             background-color: #94a3b8;
             border: 2px solid #94a3b8;
             border-radius: 4px;
+            /* Grid boşken bile çökmesin */
+            min-width: min-content; 
         }
 
         .cell {
@@ -80,14 +81,15 @@
             position: relative;
         }
 
-        .cell.black { background-color: #1e293b; }
+        .cell.black {
+            background-color: #1e293b;
+        }
 
         .cell-number {
             position: absolute;
             top: 2px;
-            left: 2px;
-            /* Numara boyutu da dinamik olsun */
-            font-size: calc(var(--cell-size) * 0.25);
+            left: 3px;
+            font-size: 10px; /* Biraz küçülttük */
             font-weight: 700;
             color: #64748b;
             z-index: 5;
@@ -100,8 +102,7 @@
             height: 100%;
             border: none;
             text-align: center;
-            /* Font boyutu dinamik */
-            font-size: calc(var(--cell-size) * var(--font-scale));
+            font-size: 20px; /* Mobilde font çok büyükse taşabilir */
             font-weight: 800;
             text-transform: uppercase;
             outline: none;
@@ -112,47 +113,83 @@
             border-radius: 0;
             z-index: 10;
             cursor: text;
-            /* Dikey ortalama ayarı */
-            padding-top: calc(var(--cell-size) * 0.15); 
+            padding-top: 8px;
+            /* Mobilde tıklayınca mavi yanıp sönmeyi kapat */
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .cell input:focus { background-color: #dbeafe; }
+        .cell input:focus {
+            background-color: #dbeafe;
+        }
+
         .cell input.correct { background-color: #dcfce7 !important; color: #166534 !important; }
         .cell input.wrong { background-color: #fee2e2 !important; color: #991b1b !important; }
 
         /* --- İPUÇLARI --- */
         .clues-wrapper {
+            flex: 1;
+            min-width: 300px; /* Mobilde tam genişlik alacak */
             width: 100%;
             display: flex;
-            flex-direction: column;
-            gap: 10px;
-            padding-bottom: 20px;
+            flex-direction: column; /* Mobilde alt alta */
+            gap: 15px;
+            padding-bottom: 50px; /* Klavye açılınca en alttaki görünsün diye */
         }
 
         .clue-box {
             background: white;
-            padding: 12px;
+            padding: 15px;
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .clue-box h3 {
             margin-top: 0;
-            font-size: 15px;
+            font-size: 16px;
             color: var(--primary-color);
             border-bottom: 2px solid #e5e7eb;
-            padding-bottom: 6px;
+            padding-bottom: 8px;
         }
 
         .clue-box ul { padding: 0; list-style: none; }
         .clue-box li {
-            padding: 6px 0;
+            padding: 8px 0; /* Mobilde daha rahat okunsun diye biraz açtık */
             border-bottom: 1px solid #f3f4f6;
-            font-size: 13px;
-            line-height: 1.4;
+            font-size: 14px;
+            line-height: 1.5;
             color: #4b5563;
         }
-        .clue-box strong { color: #111827; margin-right: 4px; }
+        .clue-box strong { color: #111827; margin-right: 5px; }
+
+        /* --- MOBİL İÇİN ÖZEL MEDYA SORGULARI --- */
+        @media (max-width: 768px) {
+            :root { 
+                /* Kutuları çok küçültmüyoruz, sığmazsa kaydırılsın istiyoruz */
+                --cell-size: 40px; 
+            }
+            
+            body {
+                padding: 10px 5px;
+            }
+
+            .game-container { 
+                flex-direction: column; 
+                align-items: center; 
+                gap: 15px;
+            }
+            
+            .puzzle-card {
+                width: 100%; /* Kart ekranı kaplasın */
+                box-sizing: border-box;
+                /* İçindeki grid büyükse kaydırma çubuğu çıksın */
+                justify-content: flex-start; 
+            }
+
+            .clues-wrapper { 
+                width: 100%; 
+                min-width: auto;
+            }
+        }
     </style>
 </head>
 <body>
@@ -162,7 +199,7 @@
     {{ puzzle|json_script:"bulmaca-data" }}
 
     <div class="game-container">
-        <div class="puzzle-card" id="puzzle-card-container">
+        <div class="puzzle-card">
             <div id="grid" class="grid-board"></div>
         </div>
 
@@ -190,43 +227,14 @@
         const dataScript = document.getElementById('bulmaca-data');
         const puzzleData = JSON.parse(dataScript.textContent);
         const gridElement = document.getElementById('grid');
-        const cardContainer = document.getElementById('puzzle-card-container');
-
-        // --- AKILLI BOYUTLANDIRMA FONKSİYONU ---
-        function resizeGrid() {
-            if (!puzzleData || !puzzleData.width) return;
-
-            // 1. Ekranın (veya kartın) kullanılabilir genişliğini al
-            // 20px padding payı düşüyoruz
-            const availableWidth = cardContainer.clientWidth - 16; 
-            
-            // 2. Kolon sayısına böl
-            let newSize = Math.floor(availableWidth / puzzleData.width);
-
-            // 3. SINIRLARI BELİRLE:
-            // Maksimum 50px olsun (Masaüstünde dev gibi olmasın)
-            if (newSize > 50) newSize = 50;
-            
-            // Minimum 32px olsun (Daha küçülürse parmakla basılamaz, o zaman kaydırma açılır)
-            if (newSize < 32) newSize = 32;
-
-            // 4. CSS Değişkenini Güncelle
-            document.documentElement.style.setProperty('--cell-size', newSize + 'px');
-        }
-
-        // Sayfa yüklenince ve ekran boyutu değişince hesapla
-        window.addEventListener('load', resizeGrid);
-        window.addEventListener('resize', resizeGrid);
 
         if (!puzzleData || !puzzleData.grid) {
             gridElement.innerHTML = "Veri Hatası";
         } else {
-            // İlk hesaplamayı hemen yap
-            resizeGrid();
-
-            // Grid Ayarı
+            // Grid kolon ayarı
             gridElement.style.gridTemplateColumns = `repeat(${puzzleData.width}, var(--cell-size))`;
 
+            // Numara sayacı
             let clueCounter = 1;
 
             puzzleData.grid.forEach((row, rowIndex) => {
@@ -237,12 +245,13 @@
                     if (cellValue === '#') {
                         cellDiv.classList.add('black');
                     } else {
-                        // Numaralandırma Mantığı (Aynı)
+                        // --- NUMARALANDIRMA MANTIĞI (Aynı) ---
                         const isAcrossStart = (colIndex === 0 || row[colIndex - 1] === '#') && 
                                               (colIndex + 1 < puzzleData.width && row[colIndex + 1] !== '#');
                         
                         const prevRow = puzzleData.grid[rowIndex - 1];
                         const nextRow = puzzleData.grid[rowIndex + 1];
+                        
                         const isDownStart = (rowIndex === 0 || (prevRow && prevRow[colIndex] === '#')) && 
                                             (nextRow && nextRow[colIndex] !== '#');
 
@@ -253,12 +262,15 @@
                             cellDiv.appendChild(numSpan);
                             clueCounter++;
                         }
+                        // --------------------------------
 
                         const input = document.createElement('input');
                         input.maxLength = 1;
                         input.dataset.row = rowIndex;
                         input.dataset.col = colIndex;
                         input.dataset.answer = cellValue;
+                        
+                        // Mobilde klavye ayarları
                         input.setAttribute('inputmode', 'text');
                         input.setAttribute('autocomplete', 'off');
 
@@ -284,7 +296,7 @@
                 });
             });
 
-            // Yön Tuşları
+            // YÖN TUŞLARI (Aynı)
             document.addEventListener('keydown', (e) => {
                 if (document.activeElement.tagName !== "INPUT") return;
                 const current = document.activeElement;
