@@ -96,13 +96,10 @@
             padding: 0; margin: 0; border-radius: 0; z-index: 10;
             cursor: text; padding-top: calc(var(--cell-size) * 0.15);
             -webkit-tap-highlight-color: transparent;
-            /* Mobilde klavye önerilerini kapatmak için kritik ayarlar */
-            caret-color: transparent; /* İmleci gizle ki kafa karışmasın (isteğe bağlı) */
+            caret-color: transparent; /* İmleci gizle */
         }
 
-        /* Yönü göstermek için aktif hücre rengi */
         .cell input:focus { background-color: #dbeafe; }
-        
         .cell input.correct { background-color: #dcfce7 !important; color: #166534 !important; }
         .cell input.wrong { background-color: #fee2e2 !important; color: #991b1b !important; }
 
@@ -203,7 +200,6 @@
                     if (cellValue === '#') {
                         cellDiv.classList.add('black');
                     } else {
-                        // Numara Mantığı
                         const isAcrossStart = (colIndex === 0 || row[colIndex - 1] === '#') && 
                                               (colIndex + 1 < puzzleData.width && row[colIndex + 1] !== '#');
                         const prevRow = puzzleData.grid[rowIndex - 1];
@@ -225,8 +221,6 @@
                         input.dataset.col = colIndex;
                         input.dataset.answer = cellValue;
                         
-                        // --- DÜZELTME 1: MOBİL KLAVYE AYARLARI ---
-                        // Bu ayarlar telefonun otomatik düzeltme yapmasını engeller
                         input.setAttribute('type', 'text');
                         input.setAttribute('inputmode', 'text'); 
                         input.setAttribute('autocomplete', 'off');
@@ -247,20 +241,16 @@
                         });
 
                         input.addEventListener('input', (e) => {
-                            // --- DÜZELTME 2: ÇOKLU KARAKTER ENGELLEME ---
+                            // Türkçe karakter ve tek harf mantığı
                             let val = e.target.value.toLocaleUpperCase('tr-TR');
                             
-                            // Eğer mobilde birden fazla harf girilirse (örn: AB), 
-                            // sadece SON harfi al. Bu "AB" sorununu kesin çözer.
                             if (val.length > 1) {
                                 val = val.slice(-1);
                             }
-                            
                             e.target.value = val;
                             
-                            // Renk Kontrolü
+                            // Renk
                             const ans = e.target.dataset.answer.toLocaleUpperCase('tr-TR');
-                            
                             if (val === ans) {
                                 e.target.classList.add('correct');
                                 e.target.classList.remove('wrong');
@@ -271,8 +261,9 @@
                                 e.target.classList.remove('correct', 'wrong');
                             }
 
-                            // --- DÜZELTME 3: OTOMATİK GEÇİŞ ---
-                            // Artık length her zaman 1 olacağı için bu blok mobilde de çalışacak
+                            // --- DÜZELTME: MOBİL İÇİN GECİKMELİ GEÇİŞ (setTimeout) ---
+                            // Telefonların "odak değiştirme" işlemini algılaması için 
+                            // 10 milisaniye bekliyoruz. Bu "alt kareye geçmeme" sorununu çözer.
                             if (val.length === 1) {
                                 const r = parseInt(input.dataset.row);
                                 const c = parseInt(input.dataset.col);
@@ -285,7 +276,10 @@
                                 }
                                 
                                 if (nextInput) {
-                                    nextInput.focus();
+                                    // SİHİRLİ SATIR BURASI:
+                                    setTimeout(() => {
+                                        nextInput.focus();
+                                    }, 10);
                                 }
                             }
                         });
@@ -317,7 +311,7 @@
                             prevInput = document.querySelector(`input[data-row='${r - 1}'][data-col='${c}']`);
                         }
                         if (prevInput) {
-                            prevInput.focus();
+                            setTimeout(() => { prevInput.focus(); }, 10);
                             e.preventDefault();
                         }
                     }
