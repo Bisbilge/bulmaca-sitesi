@@ -12,7 +12,6 @@
             --primary-color: #2563eb;
             --text-color: #111827;
             --cell-bg: #ffffff;
-            /* Mobilde varsayılan boyut biraz daha küçük olsun */
             --cell-size: 44px; 
         }
 
@@ -20,19 +19,18 @@
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-color);
             margin: 0;
-            padding: 15px 10px; /* Kenar boşlukları mobilde azaldı */
+            padding: 15px 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            /* Mobilde aşağı çekince yenilemeyi engelle (App hissi verir) */
             overscroll-behavior-y: none;
         }
 
         h1 {
             color: var(--text-color);
             margin-bottom: 15px;
-            font-size: 1.5rem; /* Mobilde başlık çok yer kaplamasın */
+            font-size: 1.5rem;
             text-align: center;
         }
 
@@ -46,22 +44,17 @@
             max-width: 1200px;
         }
 
-        /* --- BULMACA KARTI --- */
         .puzzle-card {
             background: white;
-            padding: 10px; /* Mobilde padding azaldı */
+            padding: 10px;
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            
-            /* MOBİL İÇİN KRİTİK: */
-            /* Kartın genişliği ekranı aşarsa içerik taşmasın, kaydırılsın */
             max-width: 100%;
             overflow: auto; 
-            -webkit-overflow-scrolling: touch; /* iOS'ta akıcı kaydırma */
-            
+            -webkit-overflow-scrolling: touch;
             display: flex;
-            justify-content: center; /* Küçük bulmacaları ortalar */
-            align-items: flex-start; /* Büyük bulmacalarda üstte kalsın */
+            justify-content: center;
+            align-items: flex-start;
         }
 
         .grid-board {
@@ -70,7 +63,6 @@
             background-color: #94a3b8;
             border: 2px solid #94a3b8;
             border-radius: 4px;
-            /* Grid boşken bile çökmesin */
             min-width: min-content; 
         }
 
@@ -81,15 +73,13 @@
             position: relative;
         }
 
-        .cell.black {
-            background-color: #1e293b;
-        }
+        .cell.black { background-color: #1e293b; }
 
         .cell-number {
             position: absolute;
             top: 2px;
             left: 3px;
-            font-size: 10px; /* Biraz küçülttük */
+            font-size: 10px;
             font-weight: 700;
             color: #64748b;
             z-index: 5;
@@ -98,97 +88,47 @@
         }
 
         .cell input {
-            width: 100%;
-            height: 100%;
-            border: none;
-            text-align: center;
-            font-size: 20px; /* Mobilde font çok büyükse taşabilir */
-            font-weight: 800;
-            text-transform: uppercase;
-            outline: none;
-            background: transparent;
-            color: #000000;
-            padding: 0;
-            margin: 0;
-            border-radius: 0;
-            z-index: 10;
-            cursor: text;
-            padding-top: 8px;
-            /* Mobilde tıklayınca mavi yanıp sönmeyi kapat */
+            width: 100%; height: 100%; border: none; text-align: center;
+            font-size: 20px; font-weight: 800; text-transform: uppercase;
+            outline: none; background: transparent; color: #000000;
+            padding: 0; margin: 0; border-radius: 0; z-index: 10;
+            cursor: text; padding-top: 8px;
             -webkit-tap-highlight-color: transparent;
+            /* Yönü göstermek için aktifken caret (imleç) rengini değiştirebiliriz ama mobilde görünmeyebilir */
         }
 
-        .cell input:focus {
-            background-color: #dbeafe;
-        }
-
+        .cell input:focus { background-color: #dbeafe; }
         .cell input.correct { background-color: #dcfce7 !important; color: #166534 !important; }
         .cell input.wrong { background-color: #fee2e2 !important; color: #991b1b !important; }
 
-        /* --- İPUÇLARI --- */
         .clues-wrapper {
-            flex: 1;
-            min-width: 300px; /* Mobilde tam genişlik alacak */
-            width: 100%;
-            display: flex;
-            flex-direction: column; /* Mobilde alt alta */
-            gap: 15px;
-            padding-bottom: 50px; /* Klavye açılınca en alttaki görünsün diye */
+            flex: 1; min-width: 300px; width: 100%;
+            display: flex; flex-direction: column; gap: 15px; padding-bottom: 50px;
         }
 
         .clue-box {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
+            background: white; padding: 15px; border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .clue-box h3 {
-            margin-top: 0;
-            font-size: 16px;
-            color: var(--primary-color);
-            border-bottom: 2px solid #e5e7eb;
-            padding-bottom: 8px;
+            margin-top: 0; font-size: 16px; color: var(--primary-color);
+            border-bottom: 2px solid #e5e7eb; padding-bottom: 8px;
         }
 
         .clue-box ul { padding: 0; list-style: none; }
         .clue-box li {
-            padding: 8px 0; /* Mobilde daha rahat okunsun diye biraz açtık */
-            border-bottom: 1px solid #f3f4f6;
-            font-size: 14px;
-            line-height: 1.5;
-            color: #4b5563;
+            padding: 8px 0; border-bottom: 1px solid #f3f4f6;
+            font-size: 14px; line-height: 1.5; color: #4b5563;
         }
         .clue-box strong { color: #111827; margin-right: 5px; }
 
-        /* --- MOBİL İÇİN ÖZEL MEDYA SORGULARI --- */
         @media (max-width: 768px) {
-            :root { 
-                /* Kutuları çok küçültmüyoruz, sığmazsa kaydırılsın istiyoruz */
-                --cell-size: 40px; 
-            }
-            
-            body {
-                padding: 10px 5px;
-            }
-
-            .game-container { 
-                flex-direction: column; 
-                align-items: center; 
-                gap: 15px;
-            }
-            
-            .puzzle-card {
-                width: 100%; /* Kart ekranı kaplasın */
-                box-sizing: border-box;
-                /* İçindeki grid büyükse kaydırma çubuğu çıksın */
-                justify-content: flex-start; 
-            }
-
-            .clues-wrapper { 
-                width: 100%; 
-                min-width: auto;
-            }
+            :root { --cell-size: 40px; }
+            body { padding: 10px 5px; }
+            .game-container { flex-direction: column; align-items: center; gap: 15px; }
+            .puzzle-card { width: 100%; box-sizing: border-box; justify-content: flex-start; }
+            .clues-wrapper { width: 100%; min-width: auto; }
         }
     </style>
 </head>
@@ -228,13 +168,15 @@
         const puzzleData = JSON.parse(dataScript.textContent);
         const gridElement = document.getElementById('grid');
 
+        // YAZMA YÖNÜNÜ TAKİP EDEN DEĞİŞKEN
+        // 'across' (Soldan Sağa) veya 'down' (Yukarıdan Aşağıya)
+        let currentDirection = 'across';
+        let wasAlreadyFocused = false; // Tıklama mantığı için yardımcı
+
         if (!puzzleData || !puzzleData.grid) {
             gridElement.innerHTML = "Veri Hatası";
         } else {
-            // Grid kolon ayarı
             gridElement.style.gridTemplateColumns = `repeat(${puzzleData.width}, var(--cell-size))`;
-
-            // Numara sayacı
             let clueCounter = 1;
 
             puzzleData.grid.forEach((row, rowIndex) => {
@@ -245,13 +187,11 @@
                     if (cellValue === '#') {
                         cellDiv.classList.add('black');
                     } else {
-                        // --- NUMARALANDIRMA MANTIĞI (Aynı) ---
+                        // Numara Mantığı
                         const isAcrossStart = (colIndex === 0 || row[colIndex - 1] === '#') && 
                                               (colIndex + 1 < puzzleData.width && row[colIndex + 1] !== '#');
-                        
                         const prevRow = puzzleData.grid[rowIndex - 1];
                         const nextRow = puzzleData.grid[rowIndex + 1];
-                        
                         const isDownStart = (rowIndex === 0 || (prevRow && prevRow[colIndex] === '#')) && 
                                             (nextRow && nextRow[colIndex] !== '#');
 
@@ -262,21 +202,40 @@
                             cellDiv.appendChild(numSpan);
                             clueCounter++;
                         }
-                        // --------------------------------
 
                         const input = document.createElement('input');
                         input.maxLength = 1;
                         input.dataset.row = rowIndex;
                         input.dataset.col = colIndex;
                         input.dataset.answer = cellValue;
-                        
-                        // Mobilde klavye ayarları
                         input.setAttribute('inputmode', 'text');
                         input.setAttribute('autocomplete', 'off');
 
+                        // --- YÖN DEĞİŞTİRME MANTIĞI (CLICK) ---
+                        // Mouse ile basıldığında kontrol ediyoruz
+                        input.addEventListener('mousedown', (e) => {
+                            // Eğer bastığımız eleman zaten odaklıysa (activeElement ise)
+                            // Bu "ikinci tıklama" demektir -> Yönü değiştir.
+                            wasAlreadyFocused = (document.activeElement === e.target);
+                        });
+
+                        input.addEventListener('click', (e) => {
+                            if (wasAlreadyFocused) {
+                                // Yönü değiştir: Across <-> Down
+                                currentDirection = (currentDirection === 'across') ? 'down' : 'across';
+                                console.log("Yön Değişti:", currentDirection);
+                            } else {
+                                // İlk tıklamada varsayılan olarak 'across' (veya mantığını koru)
+                                currentDirection = 'across';
+                            }
+                        });
+
+                        // --- INPUT VE OTOMATİK İLERLEME ---
                         input.addEventListener('input', (e) => {
                             const val = e.target.value.toUpperCase();
                             e.target.value = val;
+                            
+                            // Renk
                             const ans = e.target.dataset.answer;
                             if (val === ans) {
                                 e.target.classList.add('correct');
@@ -287,6 +246,25 @@
                             } else {
                                 e.target.classList.remove('correct', 'wrong');
                             }
+
+                            // ---> OTOMATİK İLERLEME <---
+                            if (val.length === 1) {
+                                const r = parseInt(input.dataset.row);
+                                const c = parseInt(input.dataset.col);
+                                
+                                let nextInput;
+                                if (currentDirection === 'across') {
+                                    // Sağa git
+                                    nextInput = document.querySelector(`input[data-row='${r}'][data-col='${c + 1}']`);
+                                } else {
+                                    // Aşağı git
+                                    nextInput = document.querySelector(`input[data-row='${r + 1}'][data-col='${c}']`);
+                                }
+
+                                if (nextInput) {
+                                    nextInput.focus();
+                                }
+                            }
                         });
 
                         input.addEventListener('focus', function() { this.select(); });
@@ -296,18 +274,51 @@
                 });
             });
 
-            // YÖN TUŞLARI (Aynı)
+            // --- TUŞ KONTROLLERİ ---
             document.addEventListener('keydown', (e) => {
                 if (document.activeElement.tagName !== "INPUT") return;
                 const current = document.activeElement;
                 let r = parseInt(current.dataset.row);
                 let c = parseInt(current.dataset.col);
 
-                if (e.key === "ArrowRight") c++;
-                if (e.key === "ArrowLeft") c--;
-                if (e.key === "ArrowDown") r++;
-                if (e.key === "ArrowUp") r--;
+                // Yön tuşlarına basınca YAZMA YÖNÜNÜ DE GÜNCELLE
+                if (e.key === "ArrowRight") {
+                    c++;
+                    currentDirection = 'across'; // Sağa bastıysa yön artık yataydır
+                }
+                if (e.key === "ArrowLeft") {
+                    c--;
+                    currentDirection = 'across';
+                }
+                if (e.key === "ArrowDown") {
+                    r++;
+                    currentDirection = 'down'; // Aşağı bastıysa yön artık dikeydir
+                }
+                if (e.key === "ArrowUp") {
+                    r--;
+                    currentDirection = 'down';
+                }
 
+                // BACKSPACE (SİLME) MANTIĞI
+                if (e.key === "Backspace") {
+                    if (current.value === "") {
+                        // Kutu zaten boşsa, seçili yöne göre GERİ git
+                        let prevInput;
+                        if (currentDirection === 'across') {
+                            prevInput = document.querySelector(`input[data-row='${r}'][data-col='${c - 1}']`);
+                        } else {
+                            prevInput = document.querySelector(`input[data-row='${r - 1}'][data-col='${c}']`);
+                        }
+
+                        if (prevInput) {
+                            prevInput.focus();
+                            e.preventDefault();
+                        }
+                    }
+                    return; 
+                }
+
+                // Hedef kutuya git
                 const target = document.querySelector(`input[data-row='${r}'][data-col='${c}']`);
                 if (target) {
                     target.focus();
