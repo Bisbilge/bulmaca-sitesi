@@ -12,8 +12,6 @@
             --primary-color: #2563eb;
             --text-color: #111827;
             --cell-bg: #ffffff;
-            
-            /* DEĞİŞİKLİK 1: Varsayılan boyutu küçülttük (44px -> 38px) */
             --cell-size: 38px; 
             --font-scale: 0.65;
         }
@@ -98,9 +96,13 @@
             padding: 0; margin: 0; border-radius: 0; z-index: 10;
             cursor: text; padding-top: calc(var(--cell-size) * 0.15);
             -webkit-tap-highlight-color: transparent;
+            /* Mobilde klavye önerilerini kapatmak için kritik ayarlar */
+            caret-color: transparent; /* İmleci gizle ki kafa karışmasın (isteğe bağlı) */
         }
 
+        /* Yönü göstermek için aktif hücre rengi */
         .cell input:focus { background-color: #dbeafe; }
+        
         .cell input.correct { background-color: #dcfce7 !important; color: #166534 !important; }
         .cell input.wrong { background-color: #fee2e2 !important; color: #991b1b !important; }
 
@@ -171,22 +173,15 @@
         const gridElement = document.getElementById('grid');
         const cardContainer = document.getElementById('puzzle-card-container');
 
-        // YAZMA YÖNÜ: 'across' veya 'down'
         let currentDirection = 'across';
         let wasAlreadyFocused = false;
 
-        // --- DEĞİŞİKLİK 2: Kutu Boyutu Hesaplama ---
         function resizeGrid() {
             if (!puzzleData || !puzzleData.width) return;
             const availableWidth = cardContainer.clientWidth - 16; 
             let newSize = Math.floor(availableWidth / puzzleData.width);
-
-            // Maksimum boyutu 50'den 42'ye çektim -> Daha küçük ve zarif
             if (newSize > 42) newSize = 42;
-            
-            // Minimum okunabilirlik sınırı
             if (newSize < 30) newSize = 30;
-
             document.documentElement.style.setProperty('--cell-size', newSize + 'px');
         }
 
@@ -196,7 +191,7 @@
         if (!puzzleData || !puzzleData.grid) {
             gridElement.innerHTML = "Veri Hatası";
         } else {
-            resizeGrid(); // İlk açılışta boyutlandır
+            resizeGrid();
             gridElement.style.gridTemplateColumns = `repeat(${puzzleData.width}, var(--cell-size))`;
             let clueCounter = 1;
 
@@ -229,13 +224,20 @@
                         input.dataset.row = rowIndex;
                         input.dataset.col = colIndex;
                         input.dataset.answer = cellValue;
-                        input.setAttribute('inputmode', 'text');
+                        
+                        // --- DÜZELTME 1: MOBİL KLAVYE AYARLARI ---
+                        // Bu ayarlar telefonun otomatik düzeltme yapmasını engeller
+                        input.setAttribute('type', 'text');
+                        input.setAttribute('inputmode', 'text'); 
                         input.setAttribute('autocomplete', 'off');
+                        input.setAttribute('autocorrect', 'off');
+                        input.setAttribute('autocapitalize', 'characters');
+                        input.setAttribute('spellcheck', 'false');
 
-                        // Yön Değiştirme (Tıklama ile)
                         input.addEventListener('mousedown', (e) => {
                             wasAlreadyFocused = (document.activeElement === e.target);
                         });
+                        
                         input.addEventListener('click', (e) => {
                             if (wasAlreadyFocused) {
                                 currentDirection = (currentDirection === 'across') ? 'down' : 'across';
@@ -244,16 +246,19 @@
                             }
                         });
 
-                        // --- DEĞİŞİKLİK 3: TÜRKÇE KARAKTER DESTEĞİ ---
                         input.addEventListener('input', (e) => {
-                            // SİHİRLİ KOD: Türkçe karakter kurallarına göre büyüt
-                            // i -> İ, ı -> I dönüşümü burada hatasız yapılır.
-                            const val = e.target.value.toLocaleUpperCase('tr-TR');
+                            // --- DÜZELTME 2: ÇOKLU KARAKTER ENGELLEME ---
+                            let val = e.target.value.toLocaleUpperCase('tr-TR');
+                            
+                            // Eğer mobilde birden fazla harf girilirse (örn: AB), 
+                            // sadece SON harfi al. Bu "AB" sorununu kesin çözer.
+                            if (val.length > 1) {
+                                val = val.slice(-1);
+                            }
                             
                             e.target.value = val;
                             
                             // Renk Kontrolü
-                            // Cevabı da aynı yöntemle büyütüyoruz ki "İ" ile "i" eşleşsin
                             const ans = e.target.dataset.answer.toLocaleUpperCase('tr-TR');
                             
                             if (val === ans) {
@@ -266,17 +271,22 @@
                                 e.target.classList.remove('correct', 'wrong');
                             }
 
-                            // Otomatik İlerleme
+                            // --- DÜZELTME 3: OTOMATİK GEÇİŞ ---
+                            // Artık length her zaman 1 olacağı için bu blok mobilde de çalışacak
                             if (val.length === 1) {
                                 const r = parseInt(input.dataset.row);
                                 const c = parseInt(input.dataset.col);
                                 let nextInput;
+                                
                                 if (currentDirection === 'across') {
                                     nextInput = document.querySelector(`input[data-row='${r}'][data-col='${c + 1}']`);
                                 } else {
                                     nextInput = document.querySelector(`input[data-row='${r + 1}'][data-col='${c}']`);
                                 }
-                                if (nextInput) nextInput.focus();
+                                
+                                if (nextInput) {
+                                    nextInput.focus();
+                                }
                             }
                         });
 
@@ -287,7 +297,6 @@
                 });
             });
 
-            // Tuş Kontrolleri
             document.addEventListener('keydown', (e) => {
                 if (document.activeElement.tagName !== "INPUT") return;
                 const current = document.activeElement;
