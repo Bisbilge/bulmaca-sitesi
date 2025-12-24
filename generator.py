@@ -7,41 +7,66 @@ TITLE = "Twitter Time 2025"
 # Harflerin yerleşimi senin attığın görsele göre hesaplandı.
 
 RAW_GRID = """
-###ÖZGE#####Ö#
-#H###Ü##K###T#
-#A#KIZILAY##E#
-#K#A#E##M###N#
-#M#D#L##E###A#
-YAPI#G##R###Z#
-#R#K#Ö#SANDVİÇ
-###Ö#T#E##E###
-#GOY#L#L#EVRİM
-#Ü###Ü#İ##L###
-#L###MANİFEST#
-#L#####S##T###
-#Ü#MAHMUT#####
+########T###############
+#####S##İ###############
+#####O##R###############
+#####SUBAR##############
+#####Y##M###############
+##K##A##İ#######K#######
+##A##L##S#K#####A#######
+##D##Ç##U#I#####MAHMUT##
+##I##Ü####Z#####E#######
+HAKMAR#YAPI#####R#G#M###
+##Ö##Ü####L#BEYZADOĞAN##
+##Y##M####A#Ö#####Y#R###
+####SERGENYALÇIN####U###
+####E#######Ü####GÜLLÜ##
+GÜZELGÖTLÜM#K#S#########
+####İ#######B#T##D######
+#ÖTENAZİ###HASANPERÇİN##
+#Z##S#######Ş#N##V######
+#G##U#######I#L##L#M####
+#E###########BERKEMAL###
+##############Y##T#N####
+###################İ####
+###################F####
+###################EVRİM
+###################S####
+###################T####
 """.strip().split('\n')
 
 CLUES = {
     "across": {
-        "1": "Eren’in eski nişanlısı",
+        "3": "Bir dağ",
         "6": "Tabela",
-        "7": "Fenerbahçenin şampiyon olamama sebebi",
-        "8": "Polis yemeği",
+        "7": "... Tanal",
+        "8": "Bimden çıktıktan sonra girmek için izin almamız gerek yer",
+        "9": "Fenerbahçenin şampiyon olamama sebebi",
         "10": "Yahudi yalakası",
-        "11": "Çocukları döven kadın oyuncunun ismi",
-        "12": "Yılın Grubu",
-        "13": "... Tanal"
+        "11": "Polis yemeği",
+        "12": "Dövme sevmeyen twitter kullanıcısı",
+        "13": "Maçı kazanamaz",
+        "14": "Bu sene kaybettiğimiz kadın sanatçı",
+        "15": "Bir iltifat",
+        "18": "Cevahirin istediği hak",
+        "19": "Pembe tayt",
+        "21": "Asayiş",
+        "22": "Çocukları döven kadın oyuncunun ismi",
+
+
     },
     "down": {
-        "2": "Bir iltifat (Saadettin Saran)",
-        "3": "... hakkımı istiyorum",
-        "4": "Bimden çıktıktan sonra girmek için izin almamız gerek yer",
+        "1": "Üzerine yazı yazılan tatlı",
+        "2": "Zeliha Bürtek",
+        "4": "... Boğası",
         "5": "...mı çok seviyorum",
-        "6": "... Boğası",
-        "8": "2 Fenocun uğruna kavga ettiği kız",
-        "9": "Öcalan'ın meclise gelmesini isteyen siyasetçi",
-        "10": "Bu sene kaybettiğimiz sanatçı",
+        "6": "Tabela",
+        "12": "Hapse girerek hepimizi sevindiren kişi",
+        "13": "2 fenocun uğruna kavge ettiği kız",
+        "16": "Babamın tarlaya gitmek için aldığı termosun markası",
+        "17": "Öcalan'ın meclise gelmesini isteyen siyasetçi",
+        "20": "Yılın grubu",
+
     }
 }
 
