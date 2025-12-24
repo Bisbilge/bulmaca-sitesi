@@ -10,6 +10,7 @@
         :root {
             --bg-color: #f3f4f6;
             --primary-color: #2563eb;
+            --secondary-color: #f97316; /* Dikey yön rengi (Turuncu) */
             --text-color: #111827;
             --cell-bg: #ffffff;
             --cell-size: 38px; 
@@ -96,13 +97,22 @@
             padding: 0; margin: 0; border-radius: 0; z-index: 10;
             cursor: text; padding-top: calc(var(--cell-size) * 0.15);
             -webkit-tap-highlight-color: transparent;
-            /* Mobilde klavye önerilerini kapatmak için kritik ayarlar */
-            caret-color: transparent; /* İmleci gizle ki kafa karışmasın (isteğe bağlı) */
+            caret-color: transparent; /* İmleci gizle */
+            box-shadow: none;
+            transition: box-shadow 0.2s;
         }
 
-        /* Yönü göstermek için aktif hücre rengi */
-        .cell input:focus { background-color: #dbeafe; }
-        
+        /* YÖN GÖSTERGELERİ */
+        .cell input.mode-across:focus {
+            background-color: #dbeafe;
+            box-shadow: inset 0 0 0 2px var(--primary-color);
+        }
+        .cell input.mode-down:focus {
+            background-color: #ffedd5;
+            box-shadow: inset 0 0 0 2px var(--secondary-color);
+        }
+
+        /* DOĞRU / YANLIŞ RENKLERİ */
         .cell input.correct { background-color: #dcfce7 !important; color: #166534 !important; }
         .cell input.wrong { background-color: #fee2e2 !important; color: #991b1b !important; }
 
@@ -174,11 +184,9 @@
         const cardContainer = document.getElementById('puzzle-card-container');
 
         let currentDirection = 'across'; // 'across' veya 'down'
-        
-        // --- OPTİMİZASYON: Inputları hafızada tutmak için matris ---
-        // Bu sayede her tuşa basıldığında DOM taraması yapmayacağız.
-        const inputMatrix = {}; 
+        const inputMatrix = {}; // Performans için hafıza matrisi
 
+        // Izgara boyutunu ekrana göre ayarla
         function resizeGrid() {
             if (!puzzleData || !puzzleData.width) return;
             const availableWidth = cardContainer.clientWidth - 16; 
@@ -191,6 +199,7 @@
         window.addEventListener('load', resizeGrid);
         window.addEventListener('resize', resizeGrid);
 
+        // Görsel odak ve yön stili güncelleme
         function updateFocusClass(input) {
             document.querySelectorAll('.cell input').forEach(el => {
                 el.classList.remove('mode-across', 'mode-down');
@@ -202,29 +211,26 @@
             }
         }
 
-        // --- OPTİMİZE EDİLMİŞ GEÇİŞ FONKSİYONU ---
+        // Bir sonraki kareye gitme (Optimize edilmiş)
         function moveToNextCell(currentInput) {
             const r = parseInt(currentInput.dataset.row);
             const c = parseInt(currentInput.dataset.col);
             let nextInput;
 
             if (currentDirection === 'across') {
-                // Matristen direkt çekiyoruz, querySelector yok (Çok daha hızlı)
                 if (inputMatrix[r] && inputMatrix[r][c + 1]) {
                     nextInput = inputMatrix[r][c + 1];
                 }
             } else {
-                // Aşağı git
                 if (inputMatrix[r + 1] && inputMatrix[r + 1][c]) {
                     nextInput = inputMatrix[r + 1][c];
                 }
             }
 
             if (nextInput) {
-                // setTimeout yerine requestAnimationFrame mobilde daha akıcıdır
                 requestAnimationFrame(() => {
-                    nextInput.focus({ preventScroll: false }); // Scrollu engelleme, doğal akış olsun
-                    nextInput.select(); // Klavyeyi açık tutmak için kritik
+                    nextInput.focus({ preventScroll: false });
+                    nextInput.select(); 
                     updateFocusClass(nextInput);
                 });
             }
@@ -238,7 +244,7 @@
             let clueCounter = 1;
 
             puzzleData.grid.forEach((row, rowIndex) => {
-                // Matris için satır oluştur
+                // Matris için satır alanı aç
                 if (!inputMatrix[rowIndex]) inputMatrix[rowIndex] = {};
 
                 row.forEach((cellValue, colIndex) => {
@@ -248,6 +254,7 @@
                     if (cellValue === '#') {
                         cellDiv.classList.add('black');
                     } else {
+                        // Soru Numaralarını Ekleme Mantığı
                         const isAcrossStart = (colIndex === 0 || row[colIndex - 1] === '#') && 
                                               (colIndex + 1 < puzzleData.width && row[colIndex + 1] !== '#');
                         const prevRow = puzzleData.grid[rowIndex - 1];
@@ -268,15 +275,15 @@
                         input.dataset.col = colIndex;
                         input.dataset.answer = cellValue;
                         
-                        // Input'u matrise kaydet (Hızlı erişim için)
+                        // Input'u matrise kaydet
                         inputMatrix[rowIndex][colIndex] = input;
 
                         input.setAttribute('type', 'text');
                         input.setAttribute('inputmode', 'text');
                         input.setAttribute('autocomplete', 'off');
                         
-                        // Tıklama Yönetimi
-                        input.addEventListener('click', (e) => {
+                        // Tıklama ile yön değiştirme
+                        input.addEventListener('click', () => {
                             if (document.activeElement === input) {
                                 if (input.classList.contains('mode-across')) {
                                     currentDirection = 'down';
@@ -291,10 +298,10 @@
 
                         input.addEventListener('focus', () => {
                             updateFocusClass(input);
-                            // Mobilde odaklanınca hemen seçmesi için küçük bir gecikme gerekebilir
                             setTimeout(() => input.select(), 10);
                         });
 
+                        // --- GİRİŞ VE DOĞRULAMA MANTIĞI ---
                         const handleInput = (e) => {
                             let val = e.target.value;
                             if (e.isComposing) return;
@@ -309,11 +316,14 @@
 
                             const ans = e.target.dataset.answer.toLocaleUpperCase('tr-TR');
                             e.target.classList.remove('correct', 'wrong');
-                            if (val === ans) e.target.classList.add('correct');
-                            else if (val !== "") e.target.classList.add('wrong');
 
-                            if (val.length === 1) {
+                            // SADECE DOĞRUYSA İLERLE
+                            if (val === ans) {
+                                e.target.classList.add('correct');
                                 moveToNextCell(input);
+                            } else if (val !== "") {
+                                e.target.classList.add('wrong');
+                                // Yanlışsa ilerlemiyoruz
                             }
                         };
 
@@ -328,14 +338,14 @@
                 });
             });
 
-            // Klavye Yönetimi (Ok tuşları ve Backspace)
+            // Yön Tuşları ve Backspace Yönetimi
             document.addEventListener('keydown', (e) => {
                 if (document.activeElement.tagName !== "INPUT") return;
                 const current = document.activeElement;
                 let r = parseInt(current.dataset.row);
                 let c = parseInt(current.dataset.col);
 
-                // Yön tuşlarında da matris kullanıyoruz
+                // Yön Tuşları
                 if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)) {
                     if (e.key === "ArrowRight") { c++; currentDirection = 'across'; }
                     if (e.key === "ArrowLeft") { c--; currentDirection = 'across'; }
@@ -352,8 +362,10 @@
                     return;
                 }
 
+                // Silme Tuşu (Backspace)
                 if (e.key === "Backspace") {
                     if (current.value === "") {
+                        // Hücre boşsa bir öncekine git
                         let prevInput;
                         if (currentDirection === 'across') {
                              if(inputMatrix[r] && inputMatrix[r][c-1]) prevInput = inputMatrix[r][c-1];
@@ -367,6 +379,9 @@
                             updateFocusClass(prevInput);
                             e.preventDefault();
                         }
+                    } else {
+                        // Doluysa temizle
+                        current.classList.remove('correct', 'wrong');
                     }
                 }
             });
