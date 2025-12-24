@@ -12,29 +12,33 @@
             --primary-color: #2563eb;
             --text-color: #111827;
             --cell-bg: #ffffff;
-            --cell-size: 50px;
+            /* Mobilde varsayılan boyut biraz daha küçük olsun */
+            --cell-size: 44px; 
         }
 
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-color);
             margin: 0;
-            padding: 20px;
+            padding: 15px 10px; /* Kenar boşlukları mobilde azaldı */
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            /* Mobilde aşağı çekince yenilemeyi engelle (App hissi verir) */
+            overscroll-behavior-y: none;
         }
 
         h1 {
             color: var(--text-color);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            font-size: 1.5rem; /* Mobilde başlık çok yer kaplamasın */
             text-align: center;
         }
 
         .game-container {
             display: flex;
-            gap: 30px;
+            gap: 20px;
             justify-content: center;
             align-items: flex-start;
             flex-wrap: wrap;
@@ -45,12 +49,19 @@
         /* --- BULMACA KARTI --- */
         .puzzle-card {
             background: white;
-            padding: 15px;
+            padding: 10px; /* Mobilde padding azaldı */
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            overflow: auto;
+            
+            /* MOBİL İÇİN KRİTİK: */
+            /* Kartın genişliği ekranı aşarsa içerik taşmasın, kaydırılsın */
+            max-width: 100%;
+            overflow: auto; 
+            -webkit-overflow-scrolling: touch; /* iOS'ta akıcı kaydırma */
+            
             display: flex;
-            justify-content: center;
+            justify-content: center; /* Küçük bulmacaları ortalar */
+            align-items: flex-start; /* Büyük bulmacalarda üstte kalsın */
         }
 
         .grid-board {
@@ -59,40 +70,39 @@
             background-color: #94a3b8;
             border: 2px solid #94a3b8;
             border-radius: 4px;
+            /* Grid boşken bile çökmesin */
+            min-width: min-content; 
         }
 
         .cell {
             width: var(--cell-size);
             height: var(--cell-size);
             background-color: var(--cell-bg);
-            position: relative; /* Numara buna göre konumlanır */
+            position: relative;
         }
 
-        /* SİYAH KARE */
         .cell.black {
             background-color: #1e293b;
         }
 
-        /* YENİ EKLENEN: KARE NUMARASI */
         .cell-number {
             position: absolute;
             top: 2px;
             left: 3px;
-            font-size: 11px;
+            font-size: 10px; /* Biraz küçülttük */
             font-weight: 700;
-            color: #64748b; /* Gri tonu */
-            z-index: 5; /* Yazının altında kalsın */
-            pointer-events: none; /* Tıklamayı engellemesin */
+            color: #64748b;
+            z-index: 5;
+            pointer-events: none;
             line-height: 1;
         }
 
-        /* INPUT (YAZI GİRİŞİ) */
         .cell input {
             width: 100%;
             height: 100%;
             border: none;
             text-align: center;
-            font-size: 24px;
+            font-size: 20px; /* Mobilde font çok büyükse taşabilir */
             font-weight: 800;
             text-transform: uppercase;
             outline: none;
@@ -101,10 +111,11 @@
             padding: 0;
             margin: 0;
             border-radius: 0;
-            z-index: 10; /* Numaranın üstünde olsun */
+            z-index: 10;
             cursor: text;
-            /* Numarayı kapatmasın diye hafif dolgu */
-            padding-top: 8px; 
+            padding-top: 8px;
+            /* Mobilde tıklayınca mavi yanıp sönmeyi kapat */
+            -webkit-tap-highlight-color: transparent;
         }
 
         .cell input:focus {
@@ -117,11 +128,12 @@
         /* --- İPUÇLARI --- */
         .clues-wrapper {
             flex: 1;
-            min-width: 300px;
-            max-width: 450px;
+            min-width: 300px; /* Mobilde tam genişlik alacak */
+            width: 100%;
             display: flex;
-            flex-direction: column;
+            flex-direction: column; /* Mobilde alt alta */
             gap: 15px;
+            padding-bottom: 50px; /* Klavye açılınca en alttaki görünsün diye */
         }
 
         .clue-box {
@@ -141,18 +153,42 @@
 
         .clue-box ul { padding: 0; list-style: none; }
         .clue-box li {
-            padding: 6px 0;
+            padding: 8px 0; /* Mobilde daha rahat okunsun diye biraz açtık */
             border-bottom: 1px solid #f3f4f6;
             font-size: 14px;
-            line-height: 1.4;
+            line-height: 1.5;
             color: #4b5563;
         }
         .clue-box strong { color: #111827; margin-right: 5px; }
 
+        /* --- MOBİL İÇİN ÖZEL MEDYA SORGULARI --- */
         @media (max-width: 768px) {
-            :root { --cell-size: 40px; }
-            .game-container { flex-direction: column; align-items: center; }
-            .clues-wrapper { width: 100%; }
+            :root { 
+                /* Kutuları çok küçültmüyoruz, sığmazsa kaydırılsın istiyoruz */
+                --cell-size: 40px; 
+            }
+            
+            body {
+                padding: 10px 5px;
+            }
+
+            .game-container { 
+                flex-direction: column; 
+                align-items: center; 
+                gap: 15px;
+            }
+            
+            .puzzle-card {
+                width: 100%; /* Kart ekranı kaplasın */
+                box-sizing: border-box;
+                /* İçindeki grid büyükse kaydırma çubuğu çıksın */
+                justify-content: flex-start; 
+            }
+
+            .clues-wrapper { 
+                width: 100%; 
+                min-width: auto;
+            }
         }
     </style>
 </head>
@@ -209,20 +245,16 @@
                     if (cellValue === '#') {
                         cellDiv.classList.add('black');
                     } else {
-                        // --- NUMARALANDIRMA MANTIĞI ---
-                        // Soldan Sağa Başlangıç mı? (Solu sınır veya duvarsa VE sağı harfse)
+                        // --- NUMARALANDIRMA MANTIĞI (Aynı) ---
                         const isAcrossStart = (colIndex === 0 || row[colIndex - 1] === '#') && 
                                               (colIndex + 1 < puzzleData.width && row[colIndex + 1] !== '#');
                         
-                        // Yukarıdan Aşağıya Başlangıç mı? (Üstü sınır veya duvarsa VE altı harfse)
-                        // Önce güvenli şekilde üst ve alt satırları kontrol et
                         const prevRow = puzzleData.grid[rowIndex - 1];
                         const nextRow = puzzleData.grid[rowIndex + 1];
                         
                         const isDownStart = (rowIndex === 0 || (prevRow && prevRow[colIndex] === '#')) && 
                                             (nextRow && nextRow[colIndex] !== '#');
 
-                        // Eğer başlangıçsa numara bas
                         if (isAcrossStart || isDownStart) {
                             const numSpan = document.createElement('span');
                             numSpan.className = 'cell-number';
@@ -238,6 +270,7 @@
                         input.dataset.col = colIndex;
                         input.dataset.answer = cellValue;
                         
+                        // Mobilde klavye ayarları
                         input.setAttribute('inputmode', 'text');
                         input.setAttribute('autocomplete', 'off');
 
@@ -263,7 +296,7 @@
                 });
             });
 
-            // YÖN TUŞLARI
+            // YÖN TUŞLARI (Aynı)
             document.addEventListener('keydown', (e) => {
                 if (document.activeElement.tagName !== "INPUT") return;
                 const current = document.activeElement;
