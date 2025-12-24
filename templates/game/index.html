@@ -12,14 +12,17 @@
             --primary-color: #2563eb;
             --text-color: #111827;
             --cell-bg: #ffffff;
-            --cell-size: 44px; 
+            
+            /* DEĞİŞİKLİK 1: Varsayılan boyutu küçülttük (44px -> 38px) */
+            --cell-size: 38px; 
+            --font-scale: 0.65;
         }
 
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-color);
             margin: 0;
-            padding: 15px 10px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -29,14 +32,14 @@
 
         h1 {
             color: var(--text-color);
-            margin-bottom: 15px;
-            font-size: 1.5rem;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
             text-align: center;
         }
 
         .game-container {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             justify-content: center;
             align-items: flex-start;
             flex-wrap: wrap;
@@ -46,7 +49,7 @@
 
         .puzzle-card {
             background: white;
-            padding: 10px;
+            padding: 8px;
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             max-width: 100%;
@@ -78,8 +81,8 @@
         .cell-number {
             position: absolute;
             top: 2px;
-            left: 3px;
-            font-size: 10px;
+            left: 2px;
+            font-size: calc(var(--cell-size) * 0.25);
             font-weight: 700;
             color: #64748b;
             z-index: 5;
@@ -89,12 +92,12 @@
 
         .cell input {
             width: 100%; height: 100%; border: none; text-align: center;
-            font-size: 20px; font-weight: 800; text-transform: uppercase;
+            font-size: calc(var(--cell-size) * var(--font-scale));
+            font-weight: 800; text-transform: uppercase;
             outline: none; background: transparent; color: #000000;
             padding: 0; margin: 0; border-radius: 0; z-index: 10;
-            cursor: text; padding-top: 8px;
+            cursor: text; padding-top: calc(var(--cell-size) * 0.15);
             -webkit-tap-highlight-color: transparent;
-            /* Yönü göstermek için aktifken caret (imleç) rengini değiştirebiliriz ama mobilde görünmeyebilir */
         }
 
         .cell input:focus { background-color: #dbeafe; }
@@ -107,24 +110,23 @@
         }
 
         .clue-box {
-            background: white; padding: 15px; border-radius: 10px;
+            background: white; padding: 12px; border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .clue-box h3 {
-            margin-top: 0; font-size: 16px; color: var(--primary-color);
-            border-bottom: 2px solid #e5e7eb; padding-bottom: 8px;
+            margin-top: 0; font-size: 15px; color: var(--primary-color);
+            border-bottom: 2px solid #e5e7eb; padding-bottom: 6px;
         }
 
         .clue-box ul { padding: 0; list-style: none; }
         .clue-box li {
-            padding: 8px 0; border-bottom: 1px solid #f3f4f6;
-            font-size: 14px; line-height: 1.5; color: #4b5563;
+            padding: 6px 0; border-bottom: 1px solid #f3f4f6;
+            font-size: 13px; line-height: 1.4; color: #4b5563;
         }
-        .clue-box strong { color: #111827; margin-right: 5px; }
+        .clue-box strong { color: #111827; margin-right: 4px; }
 
         @media (max-width: 768px) {
-            :root { --cell-size: 40px; }
             body { padding: 10px 5px; }
             .game-container { flex-direction: column; align-items: center; gap: 15px; }
             .puzzle-card { width: 100%; box-sizing: border-box; justify-content: flex-start; }
@@ -139,7 +141,7 @@
     {{ puzzle|json_script:"bulmaca-data" }}
 
     <div class="game-container">
-        <div class="puzzle-card">
+        <div class="puzzle-card" id="puzzle-card-container">
             <div id="grid" class="grid-board"></div>
         </div>
 
@@ -167,15 +169,34 @@
         const dataScript = document.getElementById('bulmaca-data');
         const puzzleData = JSON.parse(dataScript.textContent);
         const gridElement = document.getElementById('grid');
+        const cardContainer = document.getElementById('puzzle-card-container');
 
-        // YAZMA YÖNÜNÜ TAKİP EDEN DEĞİŞKEN
-        // 'across' (Soldan Sağa) veya 'down' (Yukarıdan Aşağıya)
+        // YAZMA YÖNÜ: 'across' veya 'down'
         let currentDirection = 'across';
-        let wasAlreadyFocused = false; // Tıklama mantığı için yardımcı
+        let wasAlreadyFocused = false;
+
+        // --- DEĞİŞİKLİK 2: Kutu Boyutu Hesaplama ---
+        function resizeGrid() {
+            if (!puzzleData || !puzzleData.width) return;
+            const availableWidth = cardContainer.clientWidth - 16; 
+            let newSize = Math.floor(availableWidth / puzzleData.width);
+
+            // Maksimum boyutu 50'den 42'ye çektim -> Daha küçük ve zarif
+            if (newSize > 42) newSize = 42;
+            
+            // Minimum okunabilirlik sınırı
+            if (newSize < 30) newSize = 30;
+
+            document.documentElement.style.setProperty('--cell-size', newSize + 'px');
+        }
+
+        window.addEventListener('load', resizeGrid);
+        window.addEventListener('resize', resizeGrid);
 
         if (!puzzleData || !puzzleData.grid) {
             gridElement.innerHTML = "Veri Hatası";
         } else {
+            resizeGrid(); // İlk açılışta boyutlandır
             gridElement.style.gridTemplateColumns = `repeat(${puzzleData.width}, var(--cell-size))`;
             let clueCounter = 1;
 
@@ -211,32 +232,30 @@
                         input.setAttribute('inputmode', 'text');
                         input.setAttribute('autocomplete', 'off');
 
-                        // --- YÖN DEĞİŞTİRME MANTIĞI (CLICK) ---
-                        // Mouse ile basıldığında kontrol ediyoruz
+                        // Yön Değiştirme (Tıklama ile)
                         input.addEventListener('mousedown', (e) => {
-                            // Eğer bastığımız eleman zaten odaklıysa (activeElement ise)
-                            // Bu "ikinci tıklama" demektir -> Yönü değiştir.
                             wasAlreadyFocused = (document.activeElement === e.target);
                         });
-
                         input.addEventListener('click', (e) => {
                             if (wasAlreadyFocused) {
-                                // Yönü değiştir: Across <-> Down
                                 currentDirection = (currentDirection === 'across') ? 'down' : 'across';
-                                console.log("Yön Değişti:", currentDirection);
                             } else {
-                                // İlk tıklamada varsayılan olarak 'across' (veya mantığını koru)
                                 currentDirection = 'across';
                             }
                         });
 
-                        // --- INPUT VE OTOMATİK İLERLEME ---
+                        // --- DEĞİŞİKLİK 3: TÜRKÇE KARAKTER DESTEĞİ ---
                         input.addEventListener('input', (e) => {
-                            const val = e.target.value.toUpperCase();
+                            // SİHİRLİ KOD: Türkçe karakter kurallarına göre büyüt
+                            // i -> İ, ı -> I dönüşümü burada hatasız yapılır.
+                            const val = e.target.value.toLocaleUpperCase('tr-TR');
+                            
                             e.target.value = val;
                             
-                            // Renk
-                            const ans = e.target.dataset.answer;
+                            // Renk Kontrolü
+                            // Cevabı da aynı yöntemle büyütüyoruz ki "İ" ile "i" eşleşsin
+                            const ans = e.target.dataset.answer.toLocaleUpperCase('tr-TR');
+                            
                             if (val === ans) {
                                 e.target.classList.add('correct');
                                 e.target.classList.remove('wrong');
@@ -247,23 +266,17 @@
                                 e.target.classList.remove('correct', 'wrong');
                             }
 
-                            // ---> OTOMATİK İLERLEME <---
+                            // Otomatik İlerleme
                             if (val.length === 1) {
                                 const r = parseInt(input.dataset.row);
                                 const c = parseInt(input.dataset.col);
-                                
                                 let nextInput;
                                 if (currentDirection === 'across') {
-                                    // Sağa git
                                     nextInput = document.querySelector(`input[data-row='${r}'][data-col='${c + 1}']`);
                                 } else {
-                                    // Aşağı git
                                     nextInput = document.querySelector(`input[data-row='${r + 1}'][data-col='${c}']`);
                                 }
-
-                                if (nextInput) {
-                                    nextInput.focus();
-                                }
+                                if (nextInput) nextInput.focus();
                             }
                         });
 
@@ -274,42 +287,26 @@
                 });
             });
 
-            // --- TUŞ KONTROLLERİ ---
+            // Tuş Kontrolleri
             document.addEventListener('keydown', (e) => {
                 if (document.activeElement.tagName !== "INPUT") return;
                 const current = document.activeElement;
                 let r = parseInt(current.dataset.row);
                 let c = parseInt(current.dataset.col);
 
-                // Yön tuşlarına basınca YAZMA YÖNÜNÜ DE GÜNCELLE
-                if (e.key === "ArrowRight") {
-                    c++;
-                    currentDirection = 'across'; // Sağa bastıysa yön artık yataydır
-                }
-                if (e.key === "ArrowLeft") {
-                    c--;
-                    currentDirection = 'across';
-                }
-                if (e.key === "ArrowDown") {
-                    r++;
-                    currentDirection = 'down'; // Aşağı bastıysa yön artık dikeydir
-                }
-                if (e.key === "ArrowUp") {
-                    r--;
-                    currentDirection = 'down';
-                }
+                if (e.key === "ArrowRight") { c++; currentDirection = 'across'; }
+                if (e.key === "ArrowLeft") { c--; currentDirection = 'across'; }
+                if (e.key === "ArrowDown") { r++; currentDirection = 'down'; }
+                if (e.key === "ArrowUp") { r--; currentDirection = 'down'; }
 
-                // BACKSPACE (SİLME) MANTIĞI
                 if (e.key === "Backspace") {
                     if (current.value === "") {
-                        // Kutu zaten boşsa, seçili yöne göre GERİ git
                         let prevInput;
                         if (currentDirection === 'across') {
                             prevInput = document.querySelector(`input[data-row='${r}'][data-col='${c - 1}']`);
                         } else {
                             prevInput = document.querySelector(`input[data-row='${r - 1}'][data-col='${c}']`);
                         }
-
                         if (prevInput) {
                             prevInput.focus();
                             e.preventDefault();
@@ -318,13 +315,10 @@
                     return; 
                 }
 
-                // Hedef kutuya git
                 const target = document.querySelector(`input[data-row='${r}'][data-col='${c}']`);
                 if (target) {
                     target.focus();
-                    if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)) {
-                        e.preventDefault();
-                    }
+                    if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)) e.preventDefault();
                 }
             });
         }
