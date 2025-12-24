@@ -8,91 +8,89 @@
 
     <style>
         :root {
-            /* Renk Paleti: Vintage / Gazete Kağıdı */
-            --bg-paper: #f4f1ea;       /* Ana Saman Rengi */
-            --ink-color: #2c2925;      /* Kömür Siyahı (Yazılar için) */
-            --grid-line: #1a1a1a;      /* Izgara Çizgileri */
-            --cell-bg: #fffbf6;        /* Hücre İçi (Daha açık krem) */
-            
-            --accent-highlight: #fcd34d; /* Fosforlu Kalem Sarısı (Odak) */
-            --accent-secondary: #e5e5e5; /* Pasif Çizgiler */
-            
-            --success-color: #15803d;  /* Doğru: Koyu Yeşil */
-            --error-color: #b91c1c;    /* Yanlış: Koyu Kırmızı */
-            
-            --cell-size: 40px; 
+            --bg-paper: #f4f1ea;
+            --ink-color: #2c2925;
+            --cell-bg: #fffbf6;
+            --accent-highlight: #fcd34d; 
+            --success-color: #15803d;
+            --error-color: #b91c1c;
+            --cell-size: 38px; /* Varsayılan */
         }
 
         body {
-            font-family: 'Playfair Display', serif; /* Tüm sayfada tek font */
+            font-family: 'Playfair Display', serif;
             background-color: var(--bg-paper);
             color: var(--ink-color);
             margin: 0;
-            padding: 20px;
+            padding: 15px;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* Hafif kağıt dokusu hissi */
             background-image: linear-gradient(to right, rgba(0,0,0,0.02) 1px, transparent 1px),
                               linear-gradient(to bottom, rgba(0,0,0,0.02) 1px, transparent 1px);
             background-size: 40px 40px;
         }
 
-        /* --- BAŞLIK ALANI --- */
+        /* --- HEADER --- */
         header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 25px;
             border-bottom: 2px solid var(--ink-color);
-            padding-bottom: 20px;
+            padding-bottom: 15px;
             width: 100%;
             max-width: 900px;
         }
 
         h1 {
-            font-size: 3rem;
+            font-size: 2.2rem; /* Mobilde taşmaması için biraz küçültüldü */
             font-weight: 900;
             margin: 0;
-            letter-spacing: -1px;
+            letter-spacing: -0.5px;
             text-transform: uppercase;
+            line-height: 1.1;
         }
 
         .date-line {
-            margin-top: 10px;
+            margin-top: 8px;
             font-style: italic;
-            font-size: 1.1rem;
+            font-size: 1rem;
             opacity: 0.8;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
         }
         
         .date-line span {
             display: inline-block;
-            width: 6px; height: 6px;
+            width: 5px; height: 5px;
             background: var(--ink-color);
             border-radius: 50%;
         }
 
-        /* --- OYUN KONTEYNERİ --- */
+        /* --- GAME CONTAINER --- */
         .game-container {
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            gap: 50px;
+            gap: 40px;
             width: 100%;
-            max-width: 1200px;
+            max-width: 1100px;
         }
 
-        /* --- SOL TARAF: IZGARA --- */
+        /* --- SOL TARAF: PUZZLE (Scroll Özellikli) --- */
         .puzzle-section {
-            /* Kutu görünümü yok, doğrudan ızgara var */
             flex-shrink: 0;
-            padding: 10px;
-            background: #fff; /* Sadece ızgara altı beyaz kalsın ki harfler parlasın */
-            box-shadow: 10px 10px 0px rgba(0,0,0,0.1); /* Sert gölge, retro his */
+            padding: 8px;
+            background: #fff;
+            box-shadow: 6px 6px 0px rgba(0,0,0,0.08);
             border: 2px solid var(--ink-color);
+            
+            /* -- KRİTİK MOBİL AYARLAR -- */
+            max-width: 100%; /* Ekran dışına taşmayı engelle (container) */
+            overflow-x: auto; /* Yatay kaydırmayı aç */
+            -webkit-overflow-scrolling: touch; /* Mobilde akıcı kaydırma */
         }
 
         .grid-board {
@@ -100,6 +98,8 @@
             gap: 1px;
             background-color: var(--ink-color);
             border: 2px solid var(--ink-color);
+            /* Grid, içeriği kadar geniş olsun, sıkışmasın */
+            width: max-content; 
         }
 
         .cell {
@@ -109,19 +109,14 @@
             position: relative;
         }
 
-        .cell.black {
-            background-color: var(--ink-color);
-            /* Siyah kareler dümdüz siyah */
-        }
+        .cell.black { background-color: var(--ink-color); }
 
         .cell-number {
             position: absolute;
-            top: 2px;
-            left: 3px;
+            top: 1px; left: 2px;
             font-size: calc(var(--cell-size) * 0.3);
             font-weight: 700;
             color: var(--ink-color);
-            z-index: 5;
             pointer-events: none;
         }
 
@@ -131,112 +126,89 @@
             border: none;
             text-align: center;
             font-size: calc(var(--cell-size) * 0.55);
-            font-weight: 700; /* Serif fontun ince kalmasını engellemek için */
+            font-weight: 700;
             text-transform: uppercase;
             background: transparent;
             color: var(--ink-color);
             padding: 0;
             padding-top: calc(var(--cell-size) * 0.2);
             outline: none;
-            cursor: pointer;
             border-radius: 0;
-            transition: background-color 0.15s ease;
             caret-color: transparent;
         }
 
-        /* --- ODAK VE DURUM --- */
-        .cell input.mode-across:focus,
-        .cell input.mode-down:focus {
-            /* Fosforlu kalem efekti */
-            background-color: var(--accent-highlight); 
+        .cell input.mode-across:focus, .cell input.mode-down:focus {
+            background-color: var(--accent-highlight);
         }
+        .cell input.correct { color: var(--success-color) !important; font-weight: 900; }
+        .cell input.wrong { color: var(--error-color) !important; background-color: rgba(185, 28, 28, 0.05) !important; }
 
-        .cell input.correct {
-            color: var(--success-color) !important;
-            font-weight: 900;
-        }
-        
-        .cell input.wrong {
-            color: var(--error-color) !important;
-            background-color: rgba(185, 28, 28, 0.1) !important;
-            position: relative;
-        }
-        /* Yanlış olunca üstüne çizgi çekiyormuş gibi (opsiyonel, şimdilik sadece renk) */
-
-
-        /* --- SAĞ TARAF: İPUÇLARI (DOĞAL LİSTE) --- */
+        /* --- SAĞ TARAF: İPUÇLARI (Daha Kompakt) --- */
         .clues-wrapper {
             flex: 1;
-            min-width: 300px;
-            height: calc(100vh - 150px);
-            max-height: 800px;
+            min-width: 250px; /* Biraz daralttık */
+            height: calc(100vh - 120px);
+            max-height: 700px;
             overflow-y: auto;
-            /* Scrollbar tasarımı */
             scrollbar-width: thin;
             scrollbar-color: var(--ink-color) transparent;
-            
-            /* İki sütunlu gazete düzeni gibi */
             display: flex;
             flex-direction: column;
-            gap: 30px;
-        }
-
-        .clue-column {
-            /* Kutu yok, sadece başlık ve metin */
+            gap: 20px;
         }
 
         .clue-column h3 {
-            font-size: 1.4rem;
-            border-bottom: 2px solid var(--ink-color);
-            margin: 0 0 15px 0;
-            padding-bottom: 5px;
+            font-size: 1.1rem; /* Başlık küçüldü */
+            border-bottom: 1px solid var(--ink-color);
+            margin: 0 0 10px 0;
+            padding: 5px 0;
             text-transform: uppercase;
-            /* Başlık yapışkan olsun */
             position: sticky;
             top: 0;
             background-color: var(--bg-paper);
             z-index: 10;
         }
 
-        .clue-column ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
+        .clue-column ul { list-style: none; padding: 0; margin: 0; }
 
         .clue-column li {
-            padding: 8px 0;
-            border-bottom: 1px dashed #ccc; /* Kesik çizgi, defter satırı gibi */
-            font-size: 1.1rem;
-            line-height: 1.4;
+            padding: 4px 0; /* Boşluklar azaltıldı */
+            border-bottom: 1px dashed #d1d5db;
+            font-size: 0.95rem; /* Yazı boyutu dengelendi */
+            line-height: 1.3;
             display: flex;
             align-items: baseline;
-            transition: color 0.2s;
         }
         
-        .clue-column li:hover {
-            color: #555; /* Hafif silikleşsin */
-        }
-
         .clue-column strong {
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 900;
-            margin-right: 12px;
-            min-width: 30px;
+            margin-right: 8px;
+            min-width: 24px;
         }
 
-        /* --- MOBİL UYUMLULUK --- */
+        /* --- SCROLLBAR STİLİ (Özel Tasarım) --- */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #a8a29e; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--ink-color); }
+
+        /* --- MOBİL İÇİN ÖZEL AYARLAR --- */
         @media (max-width: 900px) {
-            h1 { font-size: 2rem; }
+            body { padding: 10px; }
+            h1 { font-size: 1.8rem; }
             
             .game-container {
                 flex-direction: column;
-                align-items: center;
+                align-items: center; /* Ortala */
+                gap: 20px;
             }
 
             .puzzle-section {
-                margin-bottom: 20px;
-                box-shadow: 5px 5px 0px rgba(0,0,0,0.1);
+                /* Mobilde genişlik ekran kadar olsun, fazlası scroll olsun */
+                width: 100%;
+                display: flex;
+                justify-content: flex-start; /* Sola yaslı başlasın ki scroll mantıklı olsun */
             }
 
             .clues-wrapper {
@@ -244,10 +216,14 @@
                 height: auto;
                 max-height: none;
                 overflow-y: visible;
+                gap: 30px;
             }
             
-            .clue-column h3 {
-                top: -1px; /* Mobilde border sorunu olmasın */
+            /* Mobilde ipuçları yan yana iki sütun olsun mu? */
+            /* İsteğe bağlı: Yerden tasarruf için küçük ekranlarda */
+            .clues-wrapper {
+                display: grid;
+                grid-template-columns: 1fr; /* Şimdilik tek sütun daha temiz */
             }
         }
     </style>
@@ -257,13 +233,13 @@
     <header>
         <h1>{{ puzzle.title }}</h1>
         <div class="date-line">
+            Günlük Bulmaca <span></span> Zihin Egzersizi
         </div>
     </header>
 
     {{ puzzle|json_script:"bulmaca-data" }}
 
     <div class="game-container">
-        
         <div class="puzzle-section" id="puzzle-card-container">
             <div id="grid" class="grid-board"></div>
         </div>
@@ -286,7 +262,6 @@
                 </ul>
             </div>
         </div>
-
     </div>
 
     <script>
@@ -300,17 +275,28 @@
 
         function resizeGrid() {
             if (!puzzleData || !puzzleData.width) return;
-            // paddingler değiştiği için hesaplamada ufak pay bırakıyoruz
-            const availableWidth = cardContainer.clientWidth - 24; 
-            let newSize = Math.floor(availableWidth / puzzleData.width);
-            if (newSize > 45) newSize = 45;
-            if (newSize < 30) newSize = 30;
-            document.documentElement.style.setProperty('--cell-size', newSize + 'px');
+            
+            // --- KAYDIRMA MANTIĞI İÇİN GÜNCELLEME ---
+            const availableWidth = cardContainer.clientWidth - 20; // Padding payı
+            
+            // İdeal boyutu hesapla
+            let calculatedSize = Math.floor(availableWidth / puzzleData.width);
+            
+            // MİNİMUM BOYUT KURALI: 
+            // Eğer hesaplanan boyut 32px'den küçükse, 32px'e sabitle.
+            // Bu sayede CSS'teki overflow-x devreye girecek ve kaydırma çalışacak.
+            const minSize = 32; 
+            const maxSize = 45;
+
+            let finalSize = Math.max(minSize, Math.min(calculatedSize, maxSize));
+            
+            document.documentElement.style.setProperty('--cell-size', finalSize + 'px');
         }
 
         window.addEventListener('load', resizeGrid);
         window.addEventListener('resize', resizeGrid);
 
+        // --- Geri kalan script mantığı aynen korunmuştur ---
         function updateFocusClass(input) {
             document.querySelectorAll('.cell input').forEach(el => {
                 el.classList.remove('mode-across', 'mode-down');
