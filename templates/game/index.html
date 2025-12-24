@@ -10,7 +10,7 @@
         :root {
             --bg-color: #f3f4f6;
             --primary-color: #2563eb;
-            --secondary-color: #f97316; /* Dikey yön rengi (Turuncu) */
+            --secondary-color: #f97316;
             --text-color: #111827;
             --cell-bg: #ffffff;
             --cell-size: 38px; 
@@ -102,7 +102,6 @@
             transition: box-shadow 0.2s;
         }
 
-        /* YÖN GÖSTERGELERİ */
         .cell input.mode-across:focus {
             background-color: #dbeafe;
             box-shadow: inset 0 0 0 2px var(--primary-color);
@@ -112,7 +111,6 @@
             box-shadow: inset 0 0 0 2px var(--secondary-color);
         }
 
-        /* DOĞRU / YANLIŞ RENKLERİ */
         .cell input.correct { background-color: #dcfce7 !important; color: #166534 !important; }
         .cell input.wrong { background-color: #fee2e2 !important; color: #991b1b !important; }
 
@@ -183,10 +181,9 @@
         const gridElement = document.getElementById('grid');
         const cardContainer = document.getElementById('puzzle-card-container');
 
-        let currentDirection = 'across'; // 'across' veya 'down'
-        const inputMatrix = {}; // Performans için hafıza matrisi
+        let currentDirection = 'across'; 
+        const inputMatrix = {}; 
 
-        // Izgara boyutunu ekrana göre ayarla
         function resizeGrid() {
             if (!puzzleData || !puzzleData.width) return;
             const availableWidth = cardContainer.clientWidth - 16; 
@@ -199,7 +196,6 @@
         window.addEventListener('load', resizeGrid);
         window.addEventListener('resize', resizeGrid);
 
-        // Görsel odak ve yön stili güncelleme
         function updateFocusClass(input) {
             document.querySelectorAll('.cell input').forEach(el => {
                 el.classList.remove('mode-across', 'mode-down');
@@ -211,7 +207,6 @@
             }
         }
 
-        // Bir sonraki kareye gitme (Optimize edilmiş)
         function moveToNextCell(currentInput) {
             const r = parseInt(currentInput.dataset.row);
             const c = parseInt(currentInput.dataset.col);
@@ -244,7 +239,6 @@
             let clueCounter = 1;
 
             puzzleData.grid.forEach((row, rowIndex) => {
-                // Matris için satır alanı aç
                 if (!inputMatrix[rowIndex]) inputMatrix[rowIndex] = {};
 
                 row.forEach((cellValue, colIndex) => {
@@ -254,7 +248,6 @@
                     if (cellValue === '#') {
                         cellDiv.classList.add('black');
                     } else {
-                        // Soru Numaralarını Ekleme Mantığı
                         const isAcrossStart = (colIndex === 0 || row[colIndex - 1] === '#') && 
                                               (colIndex + 1 < puzzleData.width && row[colIndex + 1] !== '#');
                         const prevRow = puzzleData.grid[rowIndex - 1];
@@ -275,14 +268,12 @@
                         input.dataset.col = colIndex;
                         input.dataset.answer = cellValue;
                         
-                        // Input'u matrise kaydet
                         inputMatrix[rowIndex][colIndex] = input;
 
                         input.setAttribute('type', 'text');
-                        input.setAttribute('inputmode', 'text');
-                        input.setAttribute('autocomplete', 'off');
+                        input.setAttribute('inputmode', 'text'); // Mobilde harf klavyesi açar
+                        input.setAttribute('autocomplete', 'off'); // Önerileri kapatmaya çalışır
                         
-                        // Tıklama ile yön değiştirme
                         input.addEventListener('click', () => {
                             if (document.activeElement === input) {
                                 if (input.classList.contains('mode-across')) {
@@ -301,35 +292,38 @@
                             setTimeout(() => input.select(), 10);
                         });
 
-                        // --- GİRİŞ VE DOĞRULAMA MANTIĞI ---
+                        // --- KRİTİK GÜNCELLEME: Composition Engelini Kaldırdık ---
                         const handleInput = (e) => {
-                            let val = e.target.value;
-                            if (e.isComposing) return;
+                            // Mobilde 'data' özelliğinden veriyi hemen yakala, yoksa value'ya bak
+                            // Bu sayede klavye daha "tamamlamadan" harfi alırız.
+                            let val = (e.data || e.target.value || '').toLocaleUpperCase('tr-TR');
 
-                            val = val.toLocaleUpperCase('tr-TR');
-
+                            // Sadece son girilen karakteri al (Android'de veri birikebiliyor, onu engelliyoruz)
                             if (val.length > 0) {
                                 val = val.slice(-1);
                             }
                             
+                            // Girdiyi ZORLA güncelle (Composition modunu bozar ve netleştirir)
                             e.target.value = val;
 
                             const ans = e.target.dataset.answer.toLocaleUpperCase('tr-TR');
                             e.target.classList.remove('correct', 'wrong');
 
-                            // SADECE DOĞRUYSA İLERLE
+                            // Kontrol Anında Yapılsın
                             if (val === ans) {
                                 e.target.classList.add('correct');
                                 moveToNextCell(input);
                             } else if (val !== "") {
                                 e.target.classList.add('wrong');
-                                // Yanlışsa ilerlemiyoruz
                             }
                         };
 
+                        // 'isComposing' kontrolünü kaldırdık, her türlü girdiyi işliyoruz.
                         input.addEventListener('input', handleInput);
+                        
+                        // Ekstra güvenlik: Composition biterse de tetikle
                         input.addEventListener('compositionend', (e) => {
-                            handleInput({ target: e.target, isComposing: false });
+                             handleInput({ target: e.target, data: e.data });
                         });
 
                         cellDiv.appendChild(input);
@@ -338,14 +332,12 @@
                 });
             });
 
-            // Yön Tuşları ve Backspace Yönetimi
             document.addEventListener('keydown', (e) => {
                 if (document.activeElement.tagName !== "INPUT") return;
                 const current = document.activeElement;
                 let r = parseInt(current.dataset.row);
                 let c = parseInt(current.dataset.col);
 
-                // Yön Tuşları
                 if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)) {
                     if (e.key === "ArrowRight") { c++; currentDirection = 'across'; }
                     if (e.key === "ArrowLeft") { c--; currentDirection = 'across'; }
@@ -362,10 +354,8 @@
                     return;
                 }
 
-                // Silme Tuşu (Backspace)
                 if (e.key === "Backspace") {
                     if (current.value === "") {
-                        // Hücre boşsa bir öncekine git
                         let prevInput;
                         if (currentDirection === 'across') {
                              if(inputMatrix[r] && inputMatrix[r][c-1]) prevInput = inputMatrix[r][c-1];
@@ -380,7 +370,6 @@
                             e.preventDefault();
                         }
                     } else {
-                        // Doluysa temizle
                         current.classList.remove('correct', 'wrong');
                     }
                 }
