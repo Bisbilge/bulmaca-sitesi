@@ -4,52 +4,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bissle</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-paper: #f4f1ea;
-            --ink-color: #2c2925;
-            --card-bg: #ffffff;
-            --accent-highlight: #fcd34d;
+            /* --- RENK PALETİ: Tutarlı Editoryal Tema --- */
+            --bg-paper: #F2F0E6;       /* Alabaster */
+            --ink-color: #333333;      /* Kömür Grisi */
+            --card-bg: #FFFFFF;        /* Kartlar için temiz beyaz */
+            
+            /* Vurgu Renkleri */
+            --accent-primary: #2C5F2D; /* Derin Avcı Yeşili */
+            --accent-hover: #1e4520;   /* Hover durumu için koyu yeşil */
+            
+            --border-radius-soft: 8px; /* Yumuşak köşeler */
         }
 
         body {
-            font-family: 'Playfair Display', serif;
+            font-family: 'Inter', sans-serif;
             background-color: var(--bg-paper);
             color: var(--ink-color);
             margin: 0;
-            padding: 20px;
+            padding: 30px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            /* Grid Pattern Arka Plan */
-            background-image: linear-gradient(to right, rgba(0,0,0,0.02) 1px, transparent 1px),
-                              linear-gradient(to bottom, rgba(0,0,0,0.02) 1px, transparent 1px);
+            /* Grid Pattern: Opaklık %5 */
+            background-image: linear-gradient(to right, rgba(51, 51, 51, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(51, 51, 51, 0.05) 1px, transparent 1px);
             background-size: 40px 40px;
         }
 
         header {
             text-align: center;
-            margin-bottom: 40px;
-            border-bottom: 2px solid var(--ink-color);
-            padding-bottom: 20px;
+            margin-bottom: 50px;
+            /* Siyah çizgi yerine yeşil vurgu */
+            border-bottom: 2px solid var(--accent-primary);
+            padding-bottom: 25px;
             width: 100%;
             max-width: 600px;
         }
 
         h1 {
-            font-size: 2.5rem;
-            font-weight: 900;
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2.8rem;
+            font-weight: 700;
             margin: 0;
             text-transform: uppercase;
-            letter-spacing: -1px;
+            color: var(--ink-color);
+            /* Logo nefes payı */
+            letter-spacing: 0.08em; 
         }
 
         .subtitle {
+            font-family: 'Libre Baskerville', serif;
             font-style: italic;
-            opacity: 0.8;
-            margin-top: 5px;
+            color: var(--accent-primary);
+            opacity: 0.9;
+            margin-top: 8px;
             font-size: 1.1rem;
         }
 
@@ -61,15 +73,21 @@
             gap: 20px;
         }
 
+        /* --- KART TASARIMI --- */
         .puzzle-card {
             background: var(--card-bg);
-            padding: 20px 25px;
+            padding: 24px 30px;
             text-decoration: none;
             color: var(--ink-color);
-            border: 2px solid var(--ink-color);
-            /* Sert Gölge (Hard Shadow) */
-            box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
-            transition: all 0.2s ease;
+            
+            /* Sert kenarlık yerine hafif sınır */
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: var(--border-radius-soft);
+            
+            /* Yumuşak gölge efekti */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            
+            transition: all 0.25s ease;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -78,57 +96,76 @@
 
         .puzzle-card:hover {
             transform: translateY(-3px);
-            box-shadow: 6px 6px 0px var(--ink-color);
-            background-color: #fffbf0; /* Hafif sarımsı hover */
+            /* Hoverda kart sınırları yeşil oluyor */
+            border-color: var(--accent-primary);
+            /* Gölge biraz daha belirginleşiyor */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            background-color: #fff; /* Sarı yerine temiz beyaz kalıyor */
         }
 
         .puzzle-info {
             display: flex;
             flex-direction: column;
+            gap: 4px;
         }
 
         .puzzle-title {
-            font-size: 1.4rem;
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.3rem;
             font-weight: 700;
-            margin-bottom: 4px;
+            color: var(--ink-color);
+            letter-spacing: -0.02em;
+        }
+        
+        /* Hover durumunda başlık rengi değişimi */
+        .puzzle-card:hover .puzzle-title {
+            color: var(--accent-primary);
         }
 
         .puzzle-meta {
-            font-size: 0.9rem;
-            font-style: italic;
+            font-size: 0.85rem;
+            font-weight: 500;
             color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
+        /* --- BUTON TASARIMI --- */
         .btn-solve {
-            background: var(--ink-color);
-            color: #fff;
-            padding: 8px 16px;
-            font-family: sans-serif; /* Okunabilirlik için buton sans-serif olabilir */
+            background: var(--accent-primary);
+            color: #fff; /* Zemin koyu yeşil, yazı beyaz */
+            padding: 10px 20px;
+            font-family: 'Inter', sans-serif;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             border: none;
-            transition: background 0.2s;
+            border-radius: 6px; /* Hafif yuvarlak köşe */
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(44, 95, 45, 0.2);
         }
 
         .puzzle-card:hover .btn-solve {
-            background: var(--accent-highlight);
-            color: var(--ink-color);
+            background: var(--accent-hover);
+            transform: translateX(3px); /* Hoverda buton hafif sağa kayar */
         }
 
         /* Liste Boşsa */
         .empty-state {
             text-align: center;
-            padding: 40px;
-            border: 2px dashed var(--ink-color);
-            opacity: 0.6;
+            padding: 50px;
+            background: rgba(255,255,255,0.5);
+            border: 2px dashed rgba(44, 95, 45, 0.3); /* Yeşilimsi dashed border */
+            border-radius: var(--border-radius-soft);
+            color: var(--ink-color);
         }
 
         @media (max-width: 600px) {
-            h1 { font-size: 2rem; }
-            .puzzle-card { padding: 15px; }
-            .puzzle-title { font-size: 1.2rem; }
+            h1 { font-size: 2.2rem; }
+            .puzzle-card { padding: 20px; }
+            .puzzle-title { font-size: 1.15rem; }
+            .btn-solve { padding: 8px 14px; font-size: 0.8rem; }
         }
     </style>
 </head>
