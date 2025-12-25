@@ -6,28 +6,30 @@ TITLE = "Haftalık Bulmaca #5: Esperanto 101"
 # Dikeyde ana omurga: ESPERANTO
 # Yatayda kesişenler: POMO, VARMA, AMIKO, KATO, DOMO
 RAW_GRID = """
-###E#######
-###S#######
-#POMO######
-###E#######
-#VARMA#####
-###A#######
-AMIKO######
-###N#######
-#KATO######
-DOMO#######
+#######D##
+#######A##
+##J##HUNDO
+#NE####K##
+##SALUTON#
+###M###N##
+###İ######
+###K######
+KATO######
 """.strip().split('\n')
 
 CLUES = {
     "across": {
-        "1": "Elma",
-        "2": "Sıcak (Hava durumu vb.)",
-        "3": "Arkadaş, dost",
-        "4": "Kedi",
-        "5": "Ev"
+        "3": "Köpek",
+        "4": "Hayır",
+        "5": "Merhaba",
+        "7": "Kitap",
+        "8": "Kedi",
     },
     "down": {
-        "1": "Umut eden kişi (veya şu an çözdüğün dilin adı)"
+        "1": "Teşekkürler",
+        "2": "Evet",
+        "6": "Arkadaş",
+        
     }
 }
 
