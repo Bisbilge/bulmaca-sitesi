@@ -1,35 +1,44 @@
 import json
 
-TITLE = "Esperanto 101"
+TITLE = "Makarna 101"
 
 # Grid Tasarımı
 # Dikeyde ana omurga: ESPERANTO
 # Yatayda kesişenler: POMO, VARMA, AMIKO, KATO, DOMO
 RAW_GRID = """
-#######D##
-#######A##
-##J##HUNDO
-#NE####K##
-##SALUTON#
-###M###N##
-###İ######
-###K######
-KATO######
+##ALDENTE#######
+#S###R##########
+#Ü###İ##########
+#Z###Ş########S#
+#G#P#T########P#
+KELEBEK#######A#
+#Ç#S##I##L#BURGU
+###T##Y##A####E#
+###O##M##Z####T#
+######ARRABBİATA
+#########N#O##İ#
+#######FİYONK###
+#########A#C####
+###########U####
+###########K####
 """.strip().split('\n')
 
 CLUES = {
     "across": {
-        "3": "Köpek",
-        "4": "Hayır",
-        "5": "Merhaba",
-        "7": "Kitap",
-        "8": "Kedi",
+        "1": "Makarnanın çok yumuşamadan, hafif diri kalacak şekilde pişirilmesi (İtalyanca terim).",
+        "6": "Ortası büzgülü, papyonu andıran sevimli makarna şekli.",
+        "9": "Sosu tutmasıyla bilinen, matkap ucu veya tirbuşon şeklindeki makarna.",
+        "10": "İtalyanca kızgın/öfkeli anlamına gelen, bol sarımsaklı ve acı biberli domates sosu.",
+        "12": "Genellikle yoğurtla servis edilen, kurdeleye benzeyen makarna çeşidi.",
     },
     "down": {
-        "1": "Teşekkürler",
-        "2": "Evet",
-        "6": "Arkadaş",
-        
+        "2": "Türk mutfağında ev yapımı, kesme yassı makarna.",
+        "3": "Haşlanan makarnanın suyunu dökmek için kullanılan delikli kap.",
+        "4": "İtalyan mutfağının en bilinen, uzun ve ince çubuk şeklindeki hamur işi.",
+        "5": "Cenova kökenli; fesleğen, çam fıstığı, sarımsak, parmesan ve zeytinyağının dövülmesiyle yapılan yeşil sos.",
+        "7": "Bolonez sosun veya klasik öğrenci makarnasının ana protein kaynağı.",
+        "8": "Kat kat hamur, kıyma ve beşamel sos ile fırında yapılan meşhur yemek.",
+        "11": "Çorbalara ve salatalara çok yakışan, minik yuvarlak taneli makarna.",
     }
 }
 
@@ -59,7 +68,7 @@ def create_json():
     }
 
     # Dosya ismini 'esperanto.json' yapıyoruz
-    file_path = 'data/esperanto.json'
+    file_path = 'data/makarna.json'
     with open(file_path, 'w', encoding='utf-8') as f:
         json.dump(final_data, f, ensure_ascii=False, indent=2)
     
