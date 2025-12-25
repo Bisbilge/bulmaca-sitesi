@@ -1,6 +1,6 @@
 import json
 
-TITLE = "Haftalık Bulmaca #5: Esperanto 101"
+TITLE = "Esperanto 101"
 
 # Grid Tasarımı
 # Dikeyde ana omurga: ESPERANTO
