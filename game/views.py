@@ -2,21 +2,46 @@ import json
 import os
 from django.shortcuts import render
 from django.conf import settings
+from pathlib import Path
 
-def index(request):
-    # Dosya yolunu oluştur
-    json_path = os.path.join(settings.BASE_DIR, 'data', 'bulmaca.json')
+# Data klasörünün tam yolu
+DATA_DIR = Path(settings.BASE_DIR) / 'data'
+
+def home(request):
+    """Klasördeki tüm JSON dosyalarını bulup listeler."""
+    puzzles = []
     
-    # Dosyayı aç ve oku
-    try:
-        with open(json_path, 'r', encoding='utf-8') as f:
-            puzzle_data = json.load(f)
-    except Exception as e:
-        # Dosya okunamazsa hata vermesin, boş veri göndersin (Debug için)
-        print(f"HATA: JSON okunamadı! {e}")
-        puzzle_data = {}
+    if DATA_DIR.exists():
+        for filename in os.listdir(DATA_DIR):
+            if filename.endswith('.json') and filename != 'bulmaca.json': 
+                # Not: 'bulmaca.json' yedek kalabilir, listeye eklemeyelim istersen.
+                # Hepsini eklemek istersen "and filename !=..." kısmını sil.
+                
+                try:
+                    with open(DATA_DIR / filename, 'r', encoding='utf-8') as f:
+                        data = json.load(f)
+                        puzzles.append({
+                            # Dosya adını ID olarak kullanıyoruz (uzantısız)
+                            'id': filename.replace('.json', ''), 
+                            'title': data.get('title', 'İsimsiz Bulmaca')
+                        })
+                except:
+                    pass # Hatalı dosyaları görmezden gel
 
-    # HTML'e gönder
-    return render(request, 'game/index.html', {
-        'puzzle': puzzle_data
-    })
+    return render(request, 'game/home.html', {'puzzles': puzzles})
+
+def puzzle_detail(request, slug):
+    """Linkten gelen isme (slug) göre dosyayı bulup açar."""
+    filename = f"{slug}.json"
+    file_path = DATA_DIR / filename
+    
+    # Dosya varsa oku, yoksa 404 ver
+    if file_path.exists():
+        with open(file_path, 'r', encoding='utf-8') as f:
+            puzzle_data = json.load(f)
+        
+        return render(request, 'game/index.html', {
+            'puzzle': puzzle_data
+        })
+    else:
+        return render(request, 'game/404.html')

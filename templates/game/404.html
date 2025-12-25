@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sayfa Bulunamadı</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-paper: #f4f1ea;
+            --ink-color: #2c2925;
+            --accent-highlight: #fcd34d;
+        }
+
+        body {
+            font-family: 'Playfair Display', serif;
+            background-color: var(--bg-paper);
+            color: var(--ink-color);
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            /* Grid Pattern */
+            background-image: linear-gradient(to right, rgba(0,0,0,0.02) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(0,0,0,0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+            padding: 20px;
+        }
+
+        .error-code {
+            font-size: 8rem;
+            font-weight: 900;
+            line-height: 1;
+            margin: 0;
+            /* Saydam iç, sadece kenarlık efekti (Stroke text) */
+            -webkit-text-stroke: 3px var(--ink-color);
+            color: transparent; 
+            position: relative;
+        }
+        
+        /* Gölge Efekti */
+        .error-code::after {
+            content: '404';
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            color: var(--accent-highlight);
+            z-index: -1;
+            -webkit-text-stroke: 0;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin: 20px 0 10px 0;
+            text-transform: uppercase;
+        }
+
+        p {
+            font-size: 1.2rem;
+            font-style: italic;
+            margin-bottom: 40px;
+            opacity: 0.8;
+        }
+
+        .btn-home {
+            display: inline-block;
+            background: var(--ink-color);
+            color: #fff;
+            padding: 12px 30px;
+            text-decoration: none;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 2px solid var(--ink-color);
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+        }
+
+        .btn-home:hover {
+            transform: translateY(-2px);
+            box-shadow: 6px 6px 0px rgba(0,0,0,0.2);
+            background: var(--accent-highlight);
+            color: var(--ink-color);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="error-code">404</div>
+    <h2>Sayfa Bulunamadı</h2>
+    <p>Aradığınız bulmaca silinmiş veya taşınmış olabilir.</p>
+    
+    <a href="/" class="btn-home">Arşive Dön</a>
+
+</body>
+</html>

@@ -24,7 +24,10 @@ SECRET_KEY = 'django-insecure-_l)ht5+(zi^mze-=s+7f!v2tg0!oz@@_mrid1-m8)d$cqilr9v
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['bissle.org', 'www.bissle.org', '.vercel.app', 'localhost', '127.0.0.1']
+
+# 2. CSRF Güveni: Form gönderimlerinin (Login, Bulmaca kaydetme) çalışması için şart.
+CSRF_TRUSTED_ORIGINS = ['https://bissle.org', 'https://www.bissle.org']
 
 
 # Application definition
