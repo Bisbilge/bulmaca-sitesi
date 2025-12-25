@@ -27,7 +27,6 @@ DEBUG = True
 ALLOWED_HOSTS = ['bissle.org', 'www.bissle.org', '.vercel.app', 'localhost', '127.0.0.1']
 
 # 2. CSRF Güveni: Form gönderimlerinin (Login, Bulmaca kaydetme) çalışması için şart.
-CSRF_TRUSTED_ORIGINS = ['https://bissle.org', 'https://www.bissle.org']
 
 
 # Application definition
