@@ -45,3 +45,6 @@ def puzzle_detail(request, slug):
         })
     else:
         return render(request, 'game/404.html')
+def sudoku_view(request):
+    """Sudoku sayfasını render eder."""
+    return render(request, 'game/sudoku.html')

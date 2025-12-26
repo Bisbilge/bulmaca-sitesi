@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Günün Sudoku'su - Bissle</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* SENİN "BISSLE" TASARIM DEĞİŞKENLERİN */
+            --bg-paper: #F2F0E6;
+            --ink-color: #333333;
+            --cell-bg: #FFFFFF; 
+            
+            --accent-primary: #2C5F2D; 
+            --accent-highlight: #CC5500; 
+            
+            --success-color: #2C5F2D;
+            --error-color: #B91C1C;
+            
+            --cell-size: 44px;
+            --border-radius-soft: 8px;
+            
+            /* Yeni: Izgara Çizgi Renkleri */
+            --grid-line-light: #d1d5db; /* İnce çizgiler (Gri) */
+            --grid-line-heavy: #333333; /* Kalın çizgiler (Siyah) */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-paper);
+            color: var(--ink-color);
+            margin: 0; padding: 20px;
+            min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
+            background-image: linear-gradient(to right, rgba(51, 51, 51, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(51, 51, 51, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* --- HEADER --- */
+        header {
+            display: flex; flex-direction: column; align-items: center;
+            margin-bottom: 30px; border-bottom: 2px solid var(--accent-primary);
+            padding-bottom: 20px; width: 100%; max-width: 900px;
+        }
+
+        .nav-bar { width: 100%; display: flex; justify-content: flex-start; margin-bottom: 15px; }
+
+        .btn-back {
+            text-decoration: none; color: var(--bg-paper); background-color: var(--accent-primary);
+            font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.9rem;
+            display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px;
+            border-radius: var(--border-radius-soft); box-shadow: 0 2px 4px rgba(44, 95, 45, 0.2);
+            transition: all 0.2s ease;
+        }
+        .btn-back:hover { background-color: var(--ink-color); transform: translateY(-1px); }
+
+        h1 {
+            font-family: 'Libre Baskerville', serif; font-size: 2.4rem; font-weight: 700;
+            margin: 0; letter-spacing: 0.08em; color: var(--ink-color);
+            text-transform: uppercase; text-align: center;
+        }
+
+        .subtitle {
+            margin-top: 5px; font-family: 'Libre Baskerville', serif; font-style: italic;
+            font-size: 1rem; color: var(--accent-primary); opacity: 0.9;
+        }
+
+        /* --- OYUN ALANI --- */
+        .game-container {
+            display: flex; justify-content: center; align-items: flex-start;
+            gap: 40px; width: 100%; max-width: 1000px; flex-wrap: wrap;
+        }
+
+        .puzzle-section {
+            background: #fff; padding: 15px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0,0,0,0.1); border-radius: 4px;
+        }
+
+        .grid-board {
+            display: grid;
+            grid-template-columns: repeat(9, var(--cell-size));
+            grid-template-rows: repeat(9, var(--cell-size));
+            background-color: var(--ink-color);
+            /* Dış çerçeve çok kalın */
+            border: 4px solid var(--grid-line-heavy); 
+            gap: 0; /* Araları kapattık, border ile yöneteceğiz */
+        }
+
+        .cell {
+            width: var(--cell-size); height: var(--cell-size);
+            background-color: var(--cell-bg);
+            position: relative;
+            /* Varsayılan ince gri çizgiler */
+            border-right: 1px solid var(--grid-line-light);
+            border-bottom: 1px solid var(--grid-line-light);
+            box-sizing: border-box; /* Border içeriğe dahil olsun */
+        }
+
+        /* En sağ ve en alt kenarların ince çizgilerini kaldıralım (Dış çerçeve var zaten) */
+        .cell:nth-child(9n) { border-right: none; }
+        .cell:nth-child(n+73) { border-bottom: none; }
+
+        /* --- 3x3 KALIN ÇİZGİLER (GÜNCELLENDİ) --- */
+        .cell.right-border { 
+            border-right: 3px solid var(--grid-line-heavy) !important; 
+        }
+        .cell.bottom-border { 
+            border-bottom: 3px solid var(--grid-line-heavy) !important; 
+        }
+
+        .cell input {
+            font-family: 'Inter', sans-serif; width: 100%; height: 100%;
+            border: none; text-align: center; font-size: 1.5rem; font-weight: 500;
+            background: transparent; color: var(--ink-color); padding: 0; margin: 0;
+            outline: none; caret-color: transparent; cursor: pointer;
+            display: block; /* Input'un tüm alanı kaplaması için */
+        }
+
+        /* Verilen Sayılar */
+        .cell input.given {
+            font-weight: 800; color: #000; background-color: #f9fafb;
+            pointer-events: none;
+        }
+
+        /* Kullanıcı Girişi */
+        .cell input.user-input { color: var(--accent-highlight); font-weight: 600; }
+
+        /* Durumlar */
+        .cell input:focus { background-color: rgba(204, 85, 0, 0.15); }
+        .cell input.wrong { background-color: rgba(185, 28, 28, 0.15); color: var(--error-color); }
+        .cell input.correct { color: var(--success-color); }
+
+        /* --- KONTROLLER --- */
+        .sidebar {
+            flex: 1; min-width: 250px; display: flex; flex-direction: column; gap: 20px;
+        }
+
+        .control-box {
+            background: #fff; padding: 20px; border-radius: var(--border-radius-soft);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .control-box h3 {
+            font-family: 'Libre Baskerville', serif; font-size: 1.2rem;
+            color: var(--accent-primary); border-bottom: 2px solid var(--accent-primary);
+            margin: 0 0 15px 0; padding-bottom: 5px;
+        }
+
+        .btn {
+            display: block; width: 100%; padding: 12px; margin-bottom: 10px;
+            border: none; border-radius: var(--border-radius-soft);
+            font-family: 'Inter', sans-serif; font-weight: 600; font-size: 1rem;
+            cursor: pointer; transition: all 0.2s; text-align: center;
+        }
+
+        .btn-primary { background: var(--accent-primary); color: #fff; }
+        .btn-primary:hover { background: var(--ink-color); transform: translateY(-1px); }
+
+        .btn-secondary { background: transparent; border: 2px solid var(--accent-primary); color: var(--accent-primary); }
+        .btn-secondary:hover { background: var(--accent-primary); color: #fff; }
+
+        @media (max-width: 768px) {
+            .game-container { flex-direction: column; align-items: center; }
+            .sidebar { width: 100%; }
+            :root { --cell-size: 38px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-bar">
+            <a href="{% url 'home' %}" class="btn-back">
+                <span class="arrow-icon">&larr;</span> Arşive Dön
+            </a>
+        </div>
+        <h1>Sudoku</h1>
+        <div class="subtitle"></div>
+    </header>
+
+    <div class="game-container">
+        <div class="puzzle-section">
+            <div id="grid" class="grid-board"></div>
+        </div>
+
+        <div class="sidebar">
+            <div class="control-box">
+                <h3>Kontrol Paneli</h3>
+                <button class="btn btn-primary" onclick="checkGame()">Kontrol Et</button>
+                <button class="btn btn-secondary" onclick="newGame()">Yeni Oyun</button>
+            </div>
+            <div class="control-box">
+                <h3 style="font-size: 1rem;">Nasıl Oynanır?</h3>
+                <p style="font-size: 0.9rem; color: #555; line-height: 1.5;">
+                    1'den 9'a kadar rakamları kullanın. Her satırda, her sütunda ve her 3x3 kutuda rakamlar sadece bir kez yer alabilir.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const gridEl = document.getElementById('grid');
+        let solution = [];
+        let currentBoard = [];
+
+        // --- SUDOKU ALGORİTMASI ---
+        function isValid(board, row, col, num) {
+            for (let i = 0; i < 9; i++) {
+                if (board[row][i] === num || board[i][col] === num) return false;
+                const boxRow = 3 * Math.floor(row / 3) + Math.floor(i / 3);
+                const boxCol = 3 * Math.floor(col / 3) + i % 3;
+                if (board[boxRow][boxCol] === num) return false;
+            }
+            return true;
+        }
+
+        function solveSudoku(board) {
+            for (let r = 0; r < 9; r++) {
+                for (let c = 0; c < 9; c++) {
+                    if (board[r][c] === 0) {
+                        for (let num = 1; num <= 9; num++) {
+                            if (isValid(board, r, c, num)) {
+                                board[r][c] = num;
+                                if (solveSudoku(board)) return true;
+                                board[r][c] = 0;
+                            }
+                        }
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        function generateBoard() {
+            let board = Array.from({ length: 9 }, () => Array(9).fill(0));
+            for (let i = 0; i < 9; i = i + 3) fillBox(board, i, i);
+            solveSudoku(board);
+            solution = JSON.parse(JSON.stringify(board));
+
+            let attempts = 45; 
+            while (attempts > 0) {
+                let r = Math.floor(Math.random() * 9);
+                let c = Math.floor(Math.random() * 9);
+                if (board[r][c] !== 0) {
+                    board[r][c] = 0;
+                    attempts--;
+                }
+            }
+            currentBoard = board;
+        }
+
+        function fillBox(board, rowStart, colStart) {
+            let num;
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    do { num = Math.floor(Math.random() * 9) + 1; } 
+                    while (!isSafeInBox(board, rowStart, colStart, num));
+                    board[rowStart + i][colStart + j] = num;
+                }
+            }
+        }
+
+        function isSafeInBox(board, rowStart, colStart, num) {
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    if (board[rowStart + i][colStart + j] === num) return false;
+                }
+            }
+            return true;
+        }
+
+        // --- ARAYÜZ ÇİZİMİ ---
+        function drawGrid() {
+            gridEl.innerHTML = '';
+            for (let r = 0; r < 9; r++) {
+                for (let c = 0; c < 9; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+
+                    // 3x3 Kalın Çizgiler İçin Sınıf Atama
+                    // Her 3. sütun (sonuncu hariç) sağ kenar kalın olacak
+                    if ((c + 1) % 3 === 0 && c !== 8) cell.classList.add('right-border');
+                    // Her 3. satır (sonuncu hariç) alt kenar kalın olacak
+                    if ((r + 1) % 3 === 0 && r !== 8) cell.classList.add('bottom-border');
+
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.inputMode = 'numeric';
+                    input.maxLength = 1;
+                    input.dataset.row = r;
+                    input.dataset.col = c;
+                    input.autocomplete = "off";
+
+                    const val = currentBoard[r][c];
+                    if (val !== 0) {
+                        input.value = val;
+                        input.classList.add('given');
+                        input.readOnly = true;
+                    } else {
+                        input.classList.add('user-input');
+                        input.addEventListener('input', handleInput);
+                        input.addEventListener('keydown', (e) => handleNav(e, r, c));
+                        input.addEventListener('focus', function() { this.select(); });
+                    }
+
+                    cell.appendChild(input);
+                    gridEl.appendChild(cell);
+                }
+            }
+        }
+
+        function handleInput(e) {
+            let val = e.target.value.replace(/[^1-9]/g, '');
+            e.target.value = val.slice(-1);
+            e.target.classList.remove('wrong', 'correct');
+        }
+
+        function handleNav(e, r, c) {
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                e.preventDefault();
+                let nr = r, nc = c;
+                if (e.key === 'ArrowUp') nr = Math.max(0, r - 1);
+                if (e.key === 'ArrowDown') nr = Math.min(8, r + 1);
+                if (e.key === 'ArrowLeft') nc = Math.max(0, c - 1);
+                if (e.key === 'ArrowRight') nc = Math.min(8, c + 1);
+                
+                const target = document.querySelector(`input[data-row='${nr}'][data-col='${nc}']`);
+                if (target) target.focus();
+            }
+        }
+
+        function checkGame() {
+            const inputs = document.querySelectorAll('.user-input');
+            let isAllCorrect = true;
+            let hasEmpty = false;
+
+            inputs.forEach(input => {
+                const r = input.dataset.row;
+                const c = input.dataset.col;
+                const val = parseInt(input.value);
+
+                if (!val) { hasEmpty = true; return; }
+
+                if (val !== solution[r][c]) {
+                    input.classList.add('wrong');
+                    input.classList.remove('correct');
+                    isAllCorrect = false;
+                } else {
+                    input.classList.add('correct');
+                    input.classList.remove('wrong');
+                }
+            });
+
+            if (isAllCorrect && !hasEmpty) {
+                alert("Tebrikler! Bulmacayı tamamladın!");
+            }
+        }
+
+        function newGame() {
+            generateBoard();
+            drawGrid();
+        }
+
+        newGame();
+    </script>
+</body>
+</html>

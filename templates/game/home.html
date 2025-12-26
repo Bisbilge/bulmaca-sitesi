@@ -7,16 +7,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* --- RENK PALETİ: Tutarlı Editoryal Tema --- */
-            --bg-paper: #F2F0E6;       /* Alabaster */
-            --ink-color: #333333;      /* Kömür Grisi */
-            --card-bg: #FFFFFF;        /* Kartlar için temiz beyaz */
+            /* --- RENK PALETİ --- */
+            --bg-paper: #F2F0E6;       
+            --ink-color: #333333;      
+            --card-bg: #FFFFFF;        
             
-            /* Vurgu Renkleri */
-            --accent-primary: #2C5F2D; /* Derin Avcı Yeşili */
-            --accent-hover: #1e4520;   /* Hover durumu için koyu yeşil */
+            --accent-primary: #2C5F2D; /* Avcı Yeşili */
+            --accent-hover: #1e4520;   
             
-            --border-radius-soft: 8px; /* Yumuşak köşeler */
+            --border-radius-soft: 8px; 
         }
 
         body {
@@ -29,7 +28,6 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            /* Grid Pattern: Opaklık %5 */
             background-image: linear-gradient(to right, rgba(51, 51, 51, 0.05) 1px, transparent 1px),
                               linear-gradient(to bottom, rgba(51, 51, 51, 0.05) 1px, transparent 1px);
             background-size: 40px 40px;
@@ -37,8 +35,7 @@
 
         header {
             text-align: center;
-            margin-bottom: 50px;
-            /* Siyah çizgi yerine yeşil vurgu */
+            margin-bottom: 40px;
             border-bottom: 2px solid var(--accent-primary);
             padding-bottom: 25px;
             width: 100%;
@@ -47,13 +44,12 @@
 
         h1 {
             font-family: 'Libre Baskerville', serif;
-            font-size: 2.8rem;
+            font-size: 3rem;
             font-weight: 700;
             margin: 0;
             text-transform: uppercase;
             color: var(--ink-color);
-            /* Logo nefes payı */
-            letter-spacing: 0.08em; 
+            letter-spacing: 0.05em; 
         }
 
         .subtitle {
@@ -61,7 +57,7 @@
             font-style: italic;
             color: var(--accent-primary);
             opacity: 0.9;
-            margin-top: 8px;
+            margin-top: 5px;
             font-size: 1.1rem;
         }
 
@@ -79,14 +75,9 @@
             padding: 24px 30px;
             text-decoration: none;
             color: var(--ink-color);
-            
-            /* Sert kenarlık yerine hafif sınır */
             border: 1px solid rgba(0,0,0,0.08);
             border-radius: var(--border-radius-soft);
-            
-            /* Yumuşak gölge efekti */
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            
             transition: all 0.25s ease;
             display: flex;
             justify-content: space-between;
@@ -96,11 +87,9 @@
 
         .puzzle-card:hover {
             transform: translateY(-3px);
-            /* Hoverda kart sınırları yeşil oluyor */
             border-color: var(--accent-primary);
-            /* Gölge biraz daha belirginleşiyor */
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            background-color: #fff; /* Sarı yerine temiz beyaz kalıyor */
+            background-color: #fff; 
         }
 
         .puzzle-info {
@@ -117,7 +106,6 @@
             letter-spacing: -0.02em;
         }
         
-        /* Hover durumunda başlık rengi değişimi */
         .puzzle-card:hover .puzzle-title {
             color: var(--accent-primary);
         }
@@ -133,7 +121,7 @@
         /* --- BUTON TASARIMI --- */
         .btn-solve {
             background: var(--accent-primary);
-            color: #fff; /* Zemin koyu yeşil, yazı beyaz */
+            color: #fff; 
             padding: 10px 20px;
             font-family: 'Inter', sans-serif;
             font-weight: 600;
@@ -141,22 +129,22 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             border: none;
-            border-radius: 6px; /* Hafif yuvarlak köşe */
+            border-radius: 6px; 
             transition: all 0.2s ease;
             box-shadow: 0 2px 4px rgba(44, 95, 45, 0.2);
+            white-space: nowrap; 
         }
 
         .puzzle-card:hover .btn-solve {
             background: var(--accent-hover);
-            transform: translateX(3px); /* Hoverda buton hafif sağa kayar */
+            transform: translateX(3px); 
         }
 
-        /* Liste Boşsa */
         .empty-state {
             text-align: center;
             padding: 50px;
             background: rgba(255,255,255,0.5);
-            border: 2px dashed rgba(44, 95, 45, 0.3); /* Yeşilimsi dashed border */
+            border: 2px dashed rgba(44, 95, 45, 0.3);
             border-radius: var(--border-radius-soft);
             color: var(--ink-color);
         }
@@ -164,8 +152,8 @@
         @media (max-width: 600px) {
             h1 { font-size: 2.2rem; }
             .puzzle-card { padding: 20px; }
-            .puzzle-title { font-size: 1.15rem; }
-            .btn-solve { padding: 8px 14px; font-size: 0.8rem; }
+            .puzzle-title { font-size: 1.1rem; }
+            .btn-solve { padding: 8px 12px; font-size: 0.75rem; }
         }
     </style>
 </head>
@@ -177,6 +165,15 @@
     </header>
     
     <div class="list-container">
+        
+        <a href="{% url 'sudoku' %}" class="puzzle-card">
+            <div class="puzzle-info">
+                <span class="puzzle-title">Sudoku</span>
+                <span class="puzzle-meta"></span>
+            </div>
+            <span class="btn-solve">OYNA &rarr;</span>
+        </a>
+
         {% for puzzle in puzzles %}
             <a href="{% url 'puzzle_detail' puzzle.id %}" class="puzzle-card">
                 <div class="puzzle-info">
@@ -187,8 +184,8 @@
             </a>
         {% empty %}
             <div class="empty-state">
-                <h3>Henüz bulmaca eklenmedi.</h3>
-                <p>Lütfen daha sonra tekrar kontrol ediniz.</p>
+                <h3>Henüz klasik bulmaca eklenmedi.</h3>
+                <p>Ama yukarıdan Sudoku oynayabilirsiniz!</p>
             </div>
         {% endfor %}
     </div>

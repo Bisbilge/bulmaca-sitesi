@@ -5,9 +5,12 @@ from game import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     
-    # Ana sayfa: Liste görünümü
+    # Ana sayfa: Tüm bulmacaların listesi
     path('', views.home, name='home'),
     
-    # Detay sayfası: /coz/hafta-1/ gibi
+    # YENİ EKLENEN: Sudoku sayfası
+    path('sudoku/', views.sudoku_view, name='sudoku'),
+    
+    # Detay sayfası: Seçilen klasik bulmacayı açar (Örn: /coz/hafta-1/)
     path('coz/<str:slug>/', views.puzzle_detail, name='puzzle_detail'),
 ]
